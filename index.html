@@ -3,159 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Crypto Advisor - Mehrab Ali</title>
+    <title>Mehrab Cricket AI - Live</title>
     <style>
-        :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
+        :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --accent: #2b3139; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; }
         
-        .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 5px; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
-        .knowledge-stream { background: linear-gradient(90deg, #1e2329, #2b3139); border-left: 4px solid var(--gold); padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.95rem; color: #fff; }
+        .header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
+        .header h1 { color: var(--gold); margin: 0; font-size: 1.4rem; }
 
-        /* Forecast Section Styling (Video Style) */
-        .forecast-container { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.6; }
-        .forecast-title { color: var(--gold); font-weight: bold; font-size: 1rem; border-bottom: 1px solid #444; margin-bottom: 10px; padding-bottom: 5px; }
-        .scenario-box { margin-top: 10px; padding: 10px; border-radius: 5px; background: rgba(255,255,255,0.03); }
-        .bull-text { color: var(--green); font-weight: bold; }
-        .bear-text { color: var(--red); font-weight: bold; }
+        /* Knowledge Bar */
+        .ai-insight { background: var(--accent); padding: 12px; border-radius: 8px; border-left: 5px solid var(--gold); margin-bottom: 15px; font-size: 0.9rem; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; }
-        .price-val { font-size: 2rem; color: var(--gold); font-weight: bold; }
+        .dashboard { display: flex; flex-direction: column; gap: 15px; }
+
+        /* LIVE SCORE CONTAINER */
+        .score-box { background: #fff; border-radius: 12px; height: 550px; overflow: hidden; position: relative; border: 3px solid var(--gold); }
         
-        /* Chota Chart with Trendlines */
-        #chart-container { height: 320px; border-radius: 10px; overflow: hidden; border: 1px solid #333; margin-top: 5px; }
+        /* Prediction Meter */
+        .prediction-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; }
+        .meter-bg { height: 12px; background: #333; border-radius: 6px; margin: 10px 0; display: flex; overflow: hidden; }
+        .win-a { background: #0052cc; width: 50%; transition: 1s ease; }
+        .win-b { background: #d32f2f; width: 50%; transition: 1s ease; }
 
-        .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; }
-        select, input, button { padding: 8px; border-radius: 5px; border: none; background: #2b3139; color: white; }
-        button { background: var(--gold); color: black; font-weight: bold; cursor: pointer; }
+        footer { text-align: center; margin-top: 20px; color: #848e9c; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <div class="branding">Mehrab Ali - Smart Terminal</div>
-    
-    <div class="knowledge-stream">
-        <strong style="color:var(--gold)">● MEHRAB'S LIVE INSIGHT:</strong> <span id="mentor-text">Syncing market data...</span>
+    <div class="header">
+        <h1>MEHRAB ALI CRICKET AI</h1>
+        <small>Developed by Mehrab Ali | Live Prediction Engine</small>
     </div>
 
-    <div class="forecast-container" id="ai-forecast">
-        <div class="forecast-title">📊 <span id="coin-pair">BTC/USD</span> - H1 Technical Forecast</div>
-        
-        <div>🔑 <strong>Key Levels:</strong> <span id="key-levels">Calculating...</span></div>
-        
-        <div class="scenario-box">
-            <div class="bull-text">🚀 Scenario 1 - Bullish Breakout</div>
-            <div id="bull-logic">Waiting for candle close above resistance...</div>
-            <strong>Entry:</strong> <span id="entry-p">--</span> | <strong>SL:</strong> <span id="sl-p">--</span> | <strong>TP:</strong> <span id="tp-p">--</span>
-        </div>
-
-        <div class="scenario-box">
-            <div class="bear-text">📉 Scenario 2 - Bearish Rejection</div>
-            <div id="bear-logic">If price breaks trendline support...</div>
-        </div>
+    <div class="ai-insight" id="ai-text">
+        AI Analysis: Matching pitch conditions with current run rate...
     </div>
 
-    <div class="controls">
-        <select id="coin-selector" onchange="initUpdate()"></select>
-        <select id="tf-selector" onchange="initUpdate()">
-            <option value="15">15m</option>
-            <option value="60" selected>1h</option>
-            <option value="D">1D</option>
-        </select>
-        <button onclick="setAlert()">Set Alert</button>
-    </div>
-
-    <div class="grid">
-        <div class="card">
-            <h3 id="display-name" style="margin:0; font-size: 1rem;">Loading...</h3>
-            <div class="price-val" id="live-price">$0.00</div>
+    <div class="dashboard">
+        <div class="score-box">
+            <iframe 
+                src="https://m.cricbuzz.com/cricket-match/live-scores" 
+                style="width:100%; height:100%; border:none; margin-top:-50px;" 
+                scrolling="yes">
+            </iframe>
         </div>
 
-        <div class="card">
-            <h3 style="margin:0; font-size: 1rem;">Support & Resistance</h3>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div style="flex:1;">R: <strong id="r1" style="color:var(--red)">--</strong></div>
-                <div style="flex:1;">S: <strong id="s1" style="color:var(--green)">--</strong></div>
+        <div class="prediction-card">
+            <h3 style="margin-top:0; font-size:1rem; color:var(--gold);">Live Win Probability</h3>
+            <div class="meter-bg">
+                <div id="bar-a" class="win-a"></div>
+                <div id="bar-b" class="win-b"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:bold;">
+                <span id="t1">TEAM A (50%)</span>
+                <span id="t2">TEAM B (50%)</span>
             </div>
         </div>
     </div>
 
-    <div id="chart-container"><div id="tv-widget" style="height: 100%;"></div></div>
+    <footer>© 2026 Developed by Mehrab Ali</footer>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let currentID = 'bitcoin', s1_val = 0, r1_val = 0;
+        const insights = [
+            "Mehrab's AI: Chasing is hard on this pitch. Team batting first has 65% edge.",
+            "Live Analysis: Humidity is rising, expect some swing in the next 5 overs.",
+            "Technical Tip: Middle order needs to rotate strike to keep the CRR stable.",
+            "Strategic Insight: Powerplay score will decide the momentum of this match."
+        ];
 
-        async function getCoins() {
-            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30');
-            const data = await res.json();
-            const sel = document.getElementById('coin-selector');
-            data.forEach(c => {
-                let opt = document.createElement('option');
-                opt.value = c.id; opt.dataset.symbol = c.symbol.toUpperCase() + 'USDT';
-                opt.innerText = c.name; if(c.id === 'bitcoin') opt.selected = true;
-                sel.appendChild(opt);
-            });
-            initUpdate();
-        }
-
-        function initUpdate() {
-            const sel = document.getElementById('coin-selector');
-            const sym = sel.options[sel.selectedIndex].dataset.symbol;
-            const tf = document.getElementById('tf-selector').value;
-            currentID = sel.value;
-            document.getElementById('coin-pair').innerText = sym;
-            document.getElementById('display-name').innerText = sel.options[sel.selectedIndex].text;
+        function updateLogic() {
+            // Simulated AI Logic for Win Probability
+            let val = Math.floor(Math.random() * (65 - 35 + 1) + 35);
+            document.getElementById('bar-a').style.width = val + "%";
+            document.getElementById('bar-b').style.width = (100-val) + "%";
+            document.getElementById('t1').innerText = "Batting (" + val + "%)";
+            document.getElementById('t2').innerText = "Bowling (" + (100-val) + "%)";
             
-            // Chart size chota aur drawing tools on
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": "BINANCE:"+sym,
-                "interval": tf,
-                "theme": "dark",
-                "container_id": "tv-widget",
-                "drawings_access": {"type": "black", "tools": [{"name": "Trend Line"}]},
-                "studies": ["RSI@tv-basicstudies"],
-                "hide_top_toolbar": false,
-                "allow_symbol_change": true
-            });
-            fetchData();
+            document.getElementById('ai-text').innerText = insights[Math.floor(Math.random()*insights.length)];
         }
 
-        async function fetchData() {
-            try {
-                const res = await fetch(`https://api.coingecko.com/api/v3/coins/${currentID}/ohlc?vs_currency=usd&days=1`);
-                const ohlc = await res.json();
-                const last = ohlc[ohlc.length-1];
-                const high = last[2], low = last[3], close = last[4];
-                
-                const pivot = (high + low + close) / 3;
-                r1_val = (2 * pivot) - low;
-                s1_val = (2 * pivot) - high;
-
-                document.getElementById('r1').innerText = r1_val.toFixed(2);
-                document.getElementById('s1').innerText = s1_val.toFixed(2);
-                document.getElementById('key-levels').innerText = `${s1_val.toFixed(0)} - ${r1_val.toFixed(0)}`;
-
-                const pRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd`);
-                const pData = await pRes.json();
-                const price = pData[currentID].usd;
-                document.getElementById('live-price').innerText = '$' + price.toLocaleString();
-
-                // Video Style Forecast Logic
-                document.getElementById('bull-logic').innerText = `Condition: ${document.getElementById('tf-selector').value}H candle close above ${r1_val.toFixed(0)}`;
-                document.getElementById('entry-p').innerText = (r1_val * 1.002).toFixed(2);
-                document.getElementById('sl-p').innerText = (s1_val * 0.995).toFixed(2);
-                document.getElementById('tp-p').innerText = (r1_val * 1.05).toFixed(2);
-
-                document.getElementById('mentor-text').innerText = `Mehrab's AI: ${currentID.toUpperCase()} is testing ${price > pivot ? 'Resistance' : 'Support'}. Watch volume!`;
-
-            } catch(e) { console.log("Updating..."); }
-        }
-
-        getCoins();
-        setInterval(fetchData, 30000);
-        function setAlert() { alert("Alert Registered!"); }
+        setInterval(updateLogic, 20000);
+        updateLogic();
     </script>
 </body>
 </html>
