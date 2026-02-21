@@ -3,44 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Crypto Decoder - Mehrab Ali</title>
+    <title>Mehrab AI - Complete Trading Hub</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
         
-        .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 5px; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
+        .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 5px; }
         
-        /* NEW: AI Pattern Decoder Section */
-        .decoder-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .decoder-card { background: #161a1e; border-top: 3px solid var(--gold); padding: 12px; border-radius: 8px; font-size: 0.85rem; }
-        .decoder-title { font-weight: bold; color: var(--gold); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-        .logic-highlight { background: rgba(240, 185, 11, 0.1); padding: 5px; border-radius: 4px; border-left: 3px solid var(--gold); margin-top: 5px; }
+        /* Easy AI Decoder Section */
+        .decoder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .decoder-card { background: #1c2127; border-left: 4px solid var(--gold); padding: 10px; border-radius: 6px; font-size: 0.85rem; }
+        .decoder-title { font-weight: bold; color: var(--gold); font-size: 0.8rem; margin-bottom: 4px; }
+        .easy-text { color: #fff; line-height: 1.3; }
+
+        /* Forecast Section (Old Settings) */
+        .forecast-card { background: var(--card); border: 1px solid #444; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+        .forecast-row { display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.85rem; font-weight: bold; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; }
+        .card { background: var(--card); border-radius: 8px; padding: 12px; border: 1px solid #333; }
         .price-val { font-size: 1.8rem; color: var(--gold); font-weight: bold; }
         
-        #chart-container { height: 300px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
-        .controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
-        select, button { padding: 8px; border-radius: 5px; border: none; background: #2b3139; color: white; cursor: pointer; }
+        #chart-container { height: 300px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+        .controls { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
+        select, button { padding: 6px 10px; border-radius: 4px; border: none; background: #2b3139; color: white; cursor: pointer; font-size: 0.8rem; }
         button { background: var(--gold); color: black; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="branding">Mehrab Ali - AI Pattern Terminal</div>
+    <div class="branding">Mehrab Ali - AI Smart Terminal</div>
 
-    <div class="decoder-container">
+    <div class="decoder-grid">
         <div class="decoder-card">
-            <div class="decoder-title">🕯️ Candle Pattern Decoder</div>
-            <div id="candle-logic">Scanning current candle formation...</div>
-            <div id="candle-result" class="logic-highlight">Next Move: Analyzing...</div>
+            <div class="decoder-title">🕯️ Candle Kya Keh Rahi Hai?</div>
+            <div id="candle-easy" class="easy-text">Checking market mood...</div>
         </div>
-
         <div class="decoder-card">
-            <div class="decoder-title">📊 Indicator Signals (RSI/MA)</div>
-            <div id="indicator-logic">Checking RSI & EMA levels...</div>
-            <div id="indicator-result" class="logic-highlight">Advice: Standby...</div>
+            <div class="decoder-title">📊 Indicators Ka Ishara</div>
+            <div id="ind-easy" class="easy-text">Checking trend strength...</div>
+        </div>
+    </div>
+
+    <div class="forecast-card">
+        <div style="color:var(--gold); font-weight:bold; border-bottom:1px solid #333; padding-bottom:3px;">📈 AI TRADE SETUP (H1)</div>
+        <div class="forecast-row">
+            <div style="color:var(--green)">ENTRY: <span id="entry-p">--</span></div>
+            <div style="color:var(--red)">SL: <span id="sl-p">--</span></div>
+            <div style="color:var(--gold)">TP: <span id="tp-p">--</span></div>
         </div>
     </div>
 
@@ -51,19 +61,18 @@
             <option value="60" selected>1h</option>
             <option value="D">1D</option>
         </select>
-        <button onclick="fetchData()">Manual Sync</button>
+        <button onclick="fetchData()">🔄 Sync</button>
     </div>
 
     <div class="grid">
         <div class="card">
-            <h3 id="display-name" style="margin:0; font-size: 0.9rem;">Coin</h3>
+            <h3 id="display-name" style="margin:0; font-size: 0.85rem;">Coin</h3>
             <div class="price-val" id="live-price">$0.00</div>
         </div>
-        <div class="card">
-            <h3 style="margin:0; font-size: 0.9rem;">Levels</h3>
-            <div style="display:flex; justify-content:space-around; margin-top:5px;">
-                <span>R: <strong id="r1" style="color:var(--red)">--</strong></span>
-                <span>S: <strong id="s1" style="color:var(--green)">--</strong></span>
+        <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
+            <div style="display:flex; justify-content:space-between;">
+                <span>Res: <b id="r1" style="color:var(--red)">--</b></span>
+                <span>Sup: <b id="s1" style="color:var(--green)">--</b></span>
             </div>
         </div>
     </div>
@@ -95,7 +104,7 @@
             
             new TradingView.widget({
                 "autosize": true, "symbol": "BINANCE:"+sym, "interval": document.getElementById('tf-selector').value,
-                "theme": "dark", "container_id": "tv-widget", "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"]
+                "theme": "dark", "container_id": "tv-widget", "studies": ["RSI@tv-basicstudies"]
             });
             fetchData();
         }
@@ -104,50 +113,42 @@
             try {
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${currentID}/ohlc?vs_currency=usd&days=1`);
                 const ohlc = await res.json();
-                const last = ohlc[ohlc.length - 1]; // [time, open, high, low, close]
+                const last = ohlc[ohlc.length - 1]; 
                 const open = last[1], high = last[2], low = last[3], close = last[4];
-                currentPrice = close;
-
+                
                 document.getElementById('live-price').innerText = '$' + close.toLocaleString();
 
-                // 1. AI CANDLE DECODER LOGIC
-                let candleMsg = ""; let candleMove = "";
-                const bodySize = Math.abs(close - open);
-                const upperWick = high - Math.max(open, close);
-                const lowerWick = Math.min(open, close) - low;
+                // --- ASAN CANDLE DECODER LOGIC ---
+                let candleText = "";
+                const body = Math.abs(close - open);
+                const uWick = high - Math.max(open, close);
+                const lWick = Math.min(open, close) - low;
 
-                if (upperWick > bodySize * 2) {
-                    candleMsg = "Inverted Hammer / Shooting Star (Upper rejection detected).";
-                    candleMove = "Expect Bearish reversal or pullback.";
-                } else if (lowerWick > bodySize * 2) {
-                    candleMsg = "Hammer / Pin Bar (Strong lower support rejection).";
-                    candleMove = "Bullish momentum likely to follow.";
-                } else if (close > open && bodySize > (high-low)*0.7) {
-                    candleMsg = "Bullish Marubozu (Strong buying pressure).";
-                    candleMove = "Trend is strongly UP. Continue buying.";
+                if (lWick > body * 2) {
+                    candleText = "Niche se rejection hai! Matlab buyers zor laga rahe hain, price upar ja sakti hai (Bullish).";
+                } else if (uWick > body * 2) {
+                    candleText = "Upar se thappa laga hai! Sellers ne price niche girayi hai, thora sambhal kar (Bearish).";
+                } else if (close > open && body > (high-low)*0.7) {
+                    candleText = "Full Green power! Market mein tezi hai, buyers full control mein hain.";
                 } else {
-                    candleMsg = "Neutral Doji / Spinning Top (Market indecision).";
-                    candleMove = "Wait for the next candle to confirm direction.";
+                    candleText = "Market confuse hai (Doji). Abhi koi barha move nahi dikh raha, wait karein.";
                 }
-                document.getElementById('candle-logic').innerText = candleMsg;
-                document.getElementById('candle-result').innerText = "Next Move: " + candleMove;
+                document.getElementById('candle-easy').innerText = candleText;
 
-                // 2. AI INDICATOR DECODER (Simulated RSI/Trend)
+                // --- ASAN INDICATOR LOGIC ---
                 const pivot = (high + low + close) / 3;
-                document.getElementById('r1').innerText = ((2*pivot)-low).toFixed(2);
-                document.getElementById('s1').innerText = ((2*pivot)-high).toFixed(2);
+                const r1 = (2*pivot)-low;
+                const s1 = (2*pivot)-high;
+                document.getElementById('r1').innerText = r1.toFixed(2);
+                document.getElementById('s1').innerText = s1.toFixed(2);
 
-                let indMsg = ""; let indAdvice = "";
-                // Logic based on price position relative to Pivot
-                if (close > pivot) {
-                    indMsg = "Price is above Pivot. RSI showing positive momentum.";
-                    indAdvice = "Stay LONG until Resistance is hit.";
-                } else {
-                    indMsg = "Price is below Pivot. Bearish pressure increasing.";
-                    indAdvice = "Look for SHORT entries or wait for Support.";
-                }
-                document.getElementById('indicator-logic').innerText = indMsg;
-                document.getElementById('indicator-result').innerText = "Advice: " + indAdvice;
+                let indText = (close > pivot) ? "Trend Upar ka hai (Positive). Support se buy karna behtar hai." : "Trend Niche ka hai (Negative). Resistance par sell ka moka dekhein.";
+                document.getElementById('ind-easy').innerText = indText;
+
+                // --- FORECAST (ENTRY/SL/TP) ---
+                document.getElementById('entry-p').innerText = (r1 * 1.002).toFixed(2);
+                document.getElementById('sl-p').innerText = (s1 * 0.995).toFixed(2);
+                document.getElementById('tp-p').innerText = (r1 * 1.05).toFixed(2);
 
             } catch(e) { console.log("Updating..."); }
         }
