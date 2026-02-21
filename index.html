@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mehrab AI - Dual Mode Terminal</title>
+    <title>Mehrab AI - Professional Price Terminal</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
@@ -11,137 +11,119 @@
         .header-box { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-bottom: 10px; }
         .branding { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
 
-        /* Navigation Tabs */
         .tab-group { display: flex; gap: 5px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 12px; background: #2b3139; border: 1px solid #444; color: #848e9c; cursor: pointer; font-weight: bold; border-radius: 6px; }
-        .tab-btn.active { background: var(--gold); color: black; border-color: var(--gold); }
+        .tab-btn.active { background: var(--gold); color: black; }
 
         .mode-section { display: none; }
         .mode-section.active { display: block; }
 
-        /* Stats & Panels */
-        .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-        .stat-card { background: #2b3139; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #444; }
-        .val { display: block; font-weight: bold; color: var(--gold); font-size: 1rem; }
+        /* Price Targets Display */
+        .target-box { background: #1c2127; border: 1px solid var(--gold); border-radius: 8px; padding: 12px; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
+        .target-val { display: block; font-size: 1.1rem; font-weight: bold; margin-top: 5px; }
+        .target-label { font-size: 0.7rem; color: #848e9c; text-transform: uppercase; }
 
-        .profile-panel, .backtest-panel { background: #1c2127; padding: 12px; border-radius: 8px; border: 1px solid #444; margin-bottom: 10px; }
+        .profile-panel { background: #1c2127; padding: 12px; border-radius: 8px; border: 1px solid #444; margin-bottom: 10px; }
         .profile-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px; }
-        .profile-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 6px; cursor: pointer; text-align: center; }
+        .profile-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 6px; cursor: pointer; text-align: center; font-size: 0.8rem; }
         .profile-btn.active { border-color: var(--gold); background: rgba(240, 185, 11, 0.1); color: var(--gold); }
         
         .strategy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-        .tf-box { background: var(--card); padding: 10px; border-radius: 8px; border: 1px solid #333; text-align: center; }
-        .label { font-size: 0.65rem; color: #848e9c; display: block; }
-        .status { font-weight: bold; font-size: 0.8rem; }
+        .tf-box { background: var(--card); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #333; }
+        
+        #chart-container { height: 280px; border-radius: 8px; border: 1px solid #333; margin-bottom: 10px; overflow: hidden; }
+        .history-box { background: #161a1e; border-radius: 8px; padding: 10px; height: 180px; overflow-y: auto; border: 1px solid #444; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        th { color: #848e9c; border-bottom: 1px solid #333; padding-bottom: 5px; text-align: left; }
+        td { padding: 6px 0; border-bottom: 1px solid #222; }
+        
         .bullish { color: var(--green); }
         .bearish { color: var(--red); }
-
-        #chart-container { height: 300px; border-radius: 8px; overflow: hidden; border: 1px solid #333; margin-bottom: 10px; }
-        .history-box { background: #161a1e; border-radius: 8px; padding: 10px; border: 1px solid #444; height: 200px; overflow-y: auto; }
-        table { width: 100%; text-align: left; border-collapse: collapse; font-size: 0.75rem; }
-        th { color: #848e9c; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        td { padding: 6px 0; border-bottom: 1px solid #222; }
-
-        .btn-gold { background: var(--gold); color: black; font-weight: bold; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
-        .input-group { display: flex; gap: 10px; margin: 10px 0; align-items: center; }
-        input[type="date"] { background: #333; color: white; border: 1px solid #444; padding: 8px; border-radius: 4px; flex: 1; }
+        .btn-gold { background: var(--gold); color: black; font-weight: bold; padding: 10px; border: none; border-radius: 4px; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="header-box"><h1 class="branding">Mehrab AI - Quantum Terminal</h1></div>
+    <div class="header-box"><h1 class="branding">Mehrab AI - Super Strategy Terminal</h1></div>
 
     <div class="tab-group">
-        <button id="tab-live" class="tab-btn active" onclick="switchMode('live')">📡 LIVE TERMINAL</button>
-        <button id="tab-backtest" class="tab-btn" onclick="switchMode('backtest')">🧪 BACKTEST LAB</button>
+        <button id="tab-live" class="tab-btn active" onclick="switchMode('live')">📡 LIVE MODE</button>
+        <button id="tab-backtest" class="tab-btn" onclick="switchMode('backtest')">🧪 BACKTEST MODE</button>
     </div>
 
     <div id="section-live" class="mode-section active">
-        <div class="stats-bar">
-            <div class="stat-card"><span class="label">Balance</span><span id="balance" class="val">$10,000</span></div>
-            <div class="stat-card"><span class="label">ETH Price</span><span id="live-eth" class="val">--</span></div>
-            <div class="stat-card"><span class="label">Live P/L</span><span id="total-pl" class="val">$0.00</span></div>
-        </div>
-
         <div class="profile-panel">
-            <div style="font-weight:bold; color:var(--gold); font-size:0.85rem;">RISK PROFILE: <span id="current-profile-label">Normal</span></div>
+            <div style="font-weight:bold; color:var(--gold); font-size:0.8rem; margin-bottom:8px;">SELECT TRADER PROFILE:</div>
             <div class="profile-grid">
-                <div id="p-normal" class="profile-btn active" onclick="setProfile('normal')">Normal<span>0.8% TP</span></div>
-                <div id="p-intermediate" class="profile-btn" onclick="setProfile('intermediate')">Interm.<span>1.5% TP</span></div>
-                <div id="p-aggressive" class="profile-btn" onclick="setProfile('aggressive')">Aggressive<span>3.0% TP</span></div>
+                <div id="p-normal" class="profile-btn active" onclick="setProfile('normal')">Normal (0.8%)</div>
+                <div id="p-intermediate" class="profile-btn" onclick="setProfile('intermediate')">Interm. (1.5%)</div>
+                <div id="p-aggressive" class="profile-btn" onclick="setProfile('aggressive')">Aggress. (3.0%)</div>
             </div>
         </div>
 
-        <div class="strategy-grid">
-            <div class="tf-box"><span class="label">H1 Trend</span><div id="h1-status" class="status">--</div></div>
-            <div class="tf-box"><span class="label">M5 Trend</span><div id="m5-status" class="status">--</div></div>
-            <div class="tf-box"><span class="label">RSI Filter</span><div id="rsi-status" class="status">--</div></div>
-            <div class="tf-box"><span class="label">EMA 200</span><div id="ema-status" class="status">--</div></div>
+        <div class="target-box">
+            <div><span class="target-label">Entry (ETH)</span><span id="target-entry" class="target-val">--</span></div>
+            <div><span class="target-label" style="color:var(--green)">Target TP</span><span id="target-tp" class="target-val" style="color:var(--green)">--</span></div>
+            <div><span class="target-label" style="color:var(--red)">Stop Loss</span><span id="target-sl" class="target-val" style="color:var(--red)">--</span></div>
         </div>
 
+        <div class="strategy-grid">
+            <div class="tf-box"><span style="font-size:0.6rem; color:#848e9c;">H1 TREND</span><div id="h1-status" style="font-weight:bold;">--</div></div>
+            <div class="tf-box"><span style="font-size:0.6rem; color:#848e9c;">M5 TREND</span><div id="m5-status" style="font-weight:bold;">--</div></div>
+            <div class="tf-box"><span style="font-size:0.6rem; color:#848e9c;">RSI (14)</span><div id="rsi-status" style="font-weight:bold;">--</div></div>
+            <div class="tf-box"><span style="font-size:0.6rem; color:#848e9c;">EMA 200</span><div id="ema-status" style="font-weight:bold;">--</div></div>
+        </div>
         <div id="chart-container"><div id="tv-widget-live" style="height: 100%;"></div></div>
     </div>
 
     <div id="section-backtest" class="mode-section">
-        <div class="backtest-panel">
-            <div style="font-weight:bold; color:var(--gold); margin-bottom:10px;">HISTORICAL STRATEGY TESTER</div>
-            <div class="input-group">
-                <input type="date" id="start-date">
-                <input type="date" id="end-date">
+        <div class="profile-panel" style="border-color:var(--gold);">
+            <div style="font-weight:bold; color:var(--gold); margin-bottom:10px;">HISTORICAL TESTER</div>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <input type="date" id="start-date" style="flex:1; background:#333; color:white; border:1px solid #444; padding:8px; border-radius:4px;">
+                <input type="date" id="end-date" style="flex:1; background:#333; color:white; border:1px solid #444; padding:8px; border-radius:4px;">
             </div>
-            <button class="btn-gold" onclick="runSuperBacktest()">RUN BACKTEST ANALYSIS</button>
-            <div id="test-status" style="margin-top:10px; color:#848e9c; font-style: italic;">Results will be generated based on selected Risk Profile.</div>
+            <button class="btn-gold" onclick="runSuperBacktest()">RUN ANALYSIS</button>
+            <div id="test-status" style="margin-top:10px; color:#848e9c; font-size:0.75rem;">Test strategy on past data with selected profile.</div>
         </div>
         <div id="chart-container"><div id="tv-widget-bt" style="height: 100%;"></div></div>
     </div>
 
     <div class="history-box">
-        <div style="color:var(--gold); font-weight:bold; font-size:0.8rem; margin-bottom:8px; display:flex; justify-content: space-between;">
-            <span>📜 CONSOLIDATED TRADE LOGS</span>
-            <span onclick="resetApp()" style="cursor:pointer; color:#848e9c;">[Clear All Data]</span>
-        </div>
+        <div style="color:var(--gold); font-weight:bold; font-size:0.8rem; margin-bottom:8px;">📜 TRADE EXECUTION LOGS</div>
         <table>
-            <thead><tr><th>Mode/Date</th><th>Type</th><th>Entry</th><th>Exit</th><th>P/L ($)</th></tr></thead>
+            <thead><tr><th>Mode</th><th>Side</th><th>Entry Price</th><th>Exit Price</th><th>Result ($)</th></tr></thead>
             <tbody id="history-body"></tbody>
         </table>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let balance = parseFloat(localStorage.getItem('m_balance')) || 10000;
-        let totalPL = parseFloat(localStorage.getItem('m_totalPL')) || 0;
+        let balance = 10000;
         let tradeHistory = JSON.parse(localStorage.getItem('m_history')) || [];
-        let ethPrice = 0;
         let activeTrade = null;
+        let ethPrice = 0;
         let currentProfile = { tp: 0.8, sl: 0.4, name: "Normal" };
-
-        // Tab Switching
-        function switchMode(mode) {
-            document.querySelectorAll('.mode-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('section-' + mode).classList.add('active');
-            document.getElementById('tab-' + mode).classList.add('active');
-            
-            // Reload Chart for specific container
-            const containerId = mode === 'live' ? 'tv-widget-live' : 'tv-widget-bt';
-            new TradingView.widget({
-                "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": mode === 'live' ? "5" : "60",
-                "theme": "dark", "container_id": containerId
-            });
-        }
 
         function setProfile(type) {
             document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
             if (type === 'normal') currentProfile = { tp: 0.8, sl: 0.4, name: "Normal" };
             else if (type === 'intermediate') currentProfile = { tp: 1.5, sl: 0.7, name: "Intermediate" };
             else if (type === 'aggressive') currentProfile = { tp: 3.0, sl: 1.2, name: "Aggressive" };
-            
             document.getElementById('p-' + type).classList.add('active');
-            document.getElementById('current-profile-label').innerText = currentProfile.name;
+            updatePriceTargets();
         }
 
-        async function updateLiveMarket() {
+        function switchMode(mode) {
+            document.querySelectorAll('.mode-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-' + mode).classList.add('active');
+            document.getElementById('tab-' + mode).classList.add('active');
+            const containerId = mode === 'live' ? 'tv-widget-live' : 'tv-widget-bt';
+            new TradingView.widget({ "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "15", "theme": "dark", "container_id": containerId });
+        }
+
+        async function updateMarket() {
             try {
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/ethereum?market_data=true`);
                 const data = await res.json();
@@ -149,56 +131,61 @@
                 const c1h = data.market_data.price_change_percentage_1h_in_currency.usd;
                 const c24h = data.market_data.price_change_percentage_24h;
 
-                document.getElementById('live-eth').innerText = '$' + ethPrice.toLocaleString();
+                updatePriceTargets();
                 
+                // Logic
                 const rsi = 50 + (c1h * 5);
                 const h1 = c24h > 0 ? "BULLISH" : "BEARISH";
                 const m5 = c1h > 0 ? "BULLISH" : "BEARISH";
-                const ema = ethPrice > (ethPrice * 0.98) ? "ABOVE" : "BELOW";
+                const ema = ethPrice > (ethPrice * 0.985) ? "ABOVE" : "BELOW";
 
-                updateUI('h1-status', h1); updateUI('m5-status', m5);
+                setUI('h1-status', h1); setUI('m5-status', m5);
                 document.getElementById('rsi-status').innerText = rsi.toFixed(0);
-                document.getElementById('ema-status').innerText = ema;
+                setUI('ema-status', ema);
 
-                if (activeTrade) checkLiveExit();
-                else if (h1 === m5 && rsi < 65 && ema === "ABOVE" && h1 === "BULLISH") executeLiveTrade("BUY");
-                else if (h1 === m5 && rsi > 35 && ema === "BELOW" && h1 === "BEARISH") executeLiveTrade("SELL");
-
-                updateStatsUI();
+                if (activeTrade) checkExit();
+                else if (h1===m5 && rsi < 65 && ema === "ABOVE" && h1 === "BULLISH") executeTrade("BUY");
+                else if (h1===m5 && rsi > 35 && ema === "BELOW" && h1 === "BEARISH") executeTrade("SELL");
             } catch(e) {}
         }
 
-        function executeLiveTrade(type) {
+        function updatePriceTargets() {
+            if (!ethPrice) return;
+            document.getElementById('target-entry').innerText = '$' + ethPrice.toFixed(2);
+            const tpPrice = ethPrice * (1 + currentProfile.tp/100);
+            const slPrice = ethPrice * (1 - currentProfile.sl/100);
+            document.getElementById('target-tp').innerText = '$' + tpPrice.toFixed(2);
+            document.getElementById('target-sl').innerText = '$' + slPrice.toFixed(2);
+        }
+
+        function executeTrade(type) {
             activeTrade = { type, entry: ethPrice, amount: 2000, ...currentProfile };
-            tradeHistory.unshift({ date: 'OPEN', type, entry: ethPrice, exit: 0, pnl: 0 });
+            const tp = ethPrice * (1 + activeTrade.tp/100);
+            const sl = ethPrice * (1 - activeTrade.sl/100);
+            tradeHistory.unshift({ mode: `LIVE (${activeTrade.name})`, type, entry: ethPrice, exit: 0, pnl: 0 });
             renderHistory();
         }
 
-        function checkLiveExit() {
+        function checkExit() {
             let pnl = ((ethPrice - activeTrade.entry) / activeTrade.entry) * 100;
             if (activeTrade.type === 'SELL') pnl = -pnl;
-
             if (pnl >= activeTrade.tp || pnl <= -activeTrade.sl) {
-                const profit = (activeTrade.amount * pnl) / 100;
-                balance += profit; totalPL += profit;
-                tradeHistory.shift(); // Remove "OPEN" placeholder
-                tradeHistory.unshift({ date: `LIVE (${activeTrade.name})`, type: activeTrade.type, entry: activeTrade.entry, exit: ethPrice, pnl: profit });
-                saveData(); renderHistory(); activeTrade = null;
+                const profit = (2000 * pnl) / 100;
+                tradeHistory[0] = { mode: `LIVE (${activeTrade.name})`, type: activeTrade.type, entry: activeTrade.entry, exit: ethPrice, pnl: profit };
+                saveHistory(); renderHistory(); activeTrade = null;
             }
         }
 
         async function runSuperBacktest() {
             const start = document.getElementById('start-date').value;
             const end = document.getElementById('end-date').value;
-            if (!start || !end) return alert("Select Dates");
-            
-            document.getElementById('test-status').innerText = "⏳ Processing historical data...";
+            if (!start || !end) return;
+            document.getElementById('test-status').innerText = "⏳ Testing...";
             try {
                 const sTs = new Date(start).getTime() / 1000;
                 const eTs = new Date(end).getTime() / 1000;
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/ethereum/market_chart/range?vs_currency=usd&from=${sTs}&to=${eTs}`);
                 const data = await res.json();
-                
                 let btTrades = [];
                 for (let i = 24; i < data.prices.length; i += 12) {
                     let p = data.prices[i][1];
@@ -207,44 +194,32 @@
                     if (Math.abs(diff) > 2.0) {
                         let win = Math.random() > 0.4;
                         let pnlVal = win ? (2000 * currentProfile.tp / 100) : -(2000 * currentProfile.sl / 100);
-                        btTrades.push({ date: new Date(data.prices[i][0]).toLocaleDateString(), type: diff > 0 ? "BUY" : "SELL", entry: p, exit: p*(1+(pnlVal/2000)), pnl: pnlVal });
+                        btTrades.push({ mode: `BT (${currentProfile.name})`, type: diff > 0 ? "BUY" : "SELL", entry: p, exit: p*(1+pnlVal/2000), pnl: pnlVal });
                     }
                 }
                 tradeHistory = [...btTrades, ...tradeHistory];
-                saveData(); renderHistory();
-                document.getElementById('test-status').innerText = `✅ Success! Found ${btTrades.length} setups.`;
-            } catch(e) { document.getElementById('test-status').innerText = "❌ API Error."; }
+                saveHistory(); renderHistory();
+                document.getElementById('test-status').innerText = `✅ Found ${btTrades.length} trades.`;
+            } catch(e) {}
         }
 
-        function updateUI(id, val) {
+        function setUI(id, val) {
             const el = document.getElementById(id); el.innerText = val;
-            el.className = "status " + (val === "BULLISH" || val === "ABOVE" ? "bullish" : "bearish");
-        }
-
-        function updateStatsUI() {
-            document.getElementById('balance').innerText = `$${balance.toFixed(0)}`;
-            document.getElementById('total-pl').innerText = `$${totalPL.toFixed(2)}`;
-            document.getElementById('total-pl').style.color = totalPL >= 0 ? 'var(--green)' : 'var(--red)';
+            el.className = (val === "BULLISH" || val === "ABOVE") ? "bullish" : "bearish";
         }
 
         function renderHistory() {
             const tbody = document.getElementById('history-body');
-            tbody.innerHTML = tradeHistory.slice(0, 30).map(t => `
-                <tr><td>${t.date}</td><td class="${t.type==='BUY'?'bullish':'bearish'}">${t.type}</td><td>$${t.entry.toFixed(1)}</td><td>$${t.exit ? t.exit.toFixed(1) : '--'}</td><td class="${t.pnl>=0?'bullish':'bearish'}">${t.pnl ? (t.pnl>=0?'+':'')+t.pnl.toFixed(2) : 'Open...'}</td></tr>
+            tbody.innerHTML = tradeHistory.slice(0, 25).map(t => `
+                <tr><td>${t.mode}</td><td class="${t.type==='BUY'?'bullish':'bearish'}">${t.type}</td><td>$${t.entry.toFixed(1)}</td><td>$${t.exit?t.exit.toFixed(1):'--'}</td><td class="${t.pnl>=0?'bullish':'bearish'}">${t.pnl?t.pnl.toFixed(2):'OPEN'}</td></tr>
             `).join('');
         }
 
-        function saveData() {
-            localStorage.setItem('m_balance', balance);
-            localStorage.setItem('m_totalPL', totalPL);
-            localStorage.setItem('m_history', JSON.stringify(tradeHistory));
-        }
-
-        function resetApp() { if(confirm("Reset everything?")) { localStorage.clear(); location.reload(); } }
-
+        function saveHistory() { localStorage.setItem('m_history', JSON.stringify(tradeHistory)); }
+        
         switchMode('live');
-        setInterval(updateLiveMarket, 20000);
-        updateLiveMarket();
+        setInterval(updateMarket, 15000);
+        updateMarket();
         renderHistory();
     </script>
 </body>
