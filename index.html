@@ -3,67 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mentor Terminal - Mehrab Ali</title>
+    <title>Advanced AI Terminal - Mehrab Ali</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 5px; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
         
-        /* Mentor & Education Box */
-        .edu-box { background: linear-gradient(90deg, #1e2329, #2b3139); border-left: 4px solid var(--gold); padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem; line-height: 1.4; }
-        .scenario-box { background: rgba(240, 185, 11, 0.05); border: 1px dashed var(--gold); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem; }
-
-        /* Trading Levels Grid */
-        .levels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .style-card { background: var(--card); border-radius: 8px; padding: 12px; border: 1px solid #333; text-align: left; }
-        .style-header { font-weight: bold; border-bottom: 1px solid #444; margin-bottom: 8px; padding-bottom: 5px; display: flex; justify-content: space-between; }
+        .header-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
+        .branding { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-transform: uppercase; }
         
-        .val-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
-        .entry { color: var(--gold); }
-        .tp { color: var(--green); }
-        .sl { color: var(--red); }
+        /* Fear & Greed Meter */
+        .fg-meter { background: #2b3139; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid var(--gold); }
 
-        #chart-container { height: 400px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
-        .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; }
-        select, button { padding: 10px; border-radius: 5px; border: none; background: #2b3139; color: white; cursor: pointer; }
+        /* Advanced Knowledge Stream */
+        .edu-box { background: linear-gradient(90deg, #1e2329, #2b3139); border-left: 4px solid var(--gold); padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem; border-right: 4px solid var(--gold); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; position: relative; overflow: hidden; }
+        
+        /* Heatmap Effect */
+        .price-val { font-size: 2.2rem; font-weight: bold; margin: 10px 0; }
+        .sentiment-bar { height: 4px; background: #333; border-radius: 2px; margin-top: 10px; display: flex; }
+        .buy-power { background: var(--green); transition: 1s; }
+        .sell-power { background: var(--red); transition: 1s; }
+
+        .style-card { background: #161a1e; border-radius: 8px; padding: 12px; border: 1px solid #444; }
+        .val-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; border-bottom: 1px solid #2b3139; padding-bottom: 2px; }
+        
+        #chart-container { height: 420px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+        .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px; }
+        select, button { padding: 10px; border-radius: 6px; border: none; background: #2b3139; color: white; cursor: pointer; border: 1px solid #444; }
         button { background: var(--gold); color: black; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="branding">Mehrab Ali - AI Mentor Terminal</div>
+    <div class="header-box">
+        <div class="branding">Mehrab Ali AI Pro</div>
+        <div class="fg-meter">Market Sentiment: <span id="fg-val">NEUTRAL</span></div>
+    </div>
     
-    <div class="edu-box" id="edu-text">Loading Mehrab's Education Stream...</div>
-    <div class="scenario-box" id="scenario-text">Scenario Analysis: Fetching data...</div>
+    <div class="edu-box" id="edu-text">Initializing Advanced Neural Logic...</div>
 
     <div class="controls">
         <select id="coin-selector" onchange="initUpdate()"></select>
         <select id="tf-selector" onchange="initUpdate()">
             <option value="15">15m (Scalp)</option>
             <option value="60" selected>1h (Swing)</option>
-            <option value="D">1D (Invest)</option>
+            <option value="D">1D (Hold)</option>
         </select>
-        <button onclick="fetchData()">Refresh Levels</button>
+        <button onclick="fetchData()">🔄 Sync Data</button>
     </div>
 
-    <div class="levels-grid">
-        <div class="style-card">
-            <div class="style-header"><span>Normal Trader</span> <small>Low Risk</small></div>
-            <div class="val-row">Entry: <span class="entry" id="n-entry">--</span></div>
-            <div class="val-row">Take Profit: <span class="tp" id="n-tp">--</span></div>
-            <div class="val-row">Stop Loss: <span class="sl" id="n-sl">--</span></div>
+    <div class="grid">
+        <div class="card" id="price-card">
+            <h3 id="display-name" style="margin:0; font-size: 0.9rem; color:#848e9c;">Market Live</h3>
+            <div class="price-val" id="live-price">$0.00</div>
+            <div style="font-size:0.75rem;">Order Flow Sentiment:</div>
+            <div class="sentiment-bar">
+                <div id="buy-p" class="buy-power"></div>
+                <div id="sell-p" class="sell-power"></div>
+            </div>
         </div>
+
         <div class="style-card">
-            <div class="style-header"><span>Intermediate</span> <small>Mid Risk</small></div>
-            <div class="val-row">Entry: <span class="entry" id="i-entry">--</span></div>
-            <div class="val-row">Take Profit: <span class="tp" id="i-tp">--</span></div>
-            <div class="val-row">Stop Loss: <span class="sl" id="i-sl">--</span></div>
-        </div>
-        <div class="style-card">
-            <div class="style-header"><span>Aggressive</span> <small>High Risk</small></div>
-            <div class="val-row">Entry: <span class="entry" id="a-entry">--</span></div>
-            <div class="val-row">Take Profit: <span class="tp" id="a-tp">--</span></div>
-            <div class="val-row">Stop Loss: <span class="sl" id="a-sl">--</span></div>
+            <div style="color:var(--gold); font-weight:bold; margin-bottom:8px; font-size:0.9rem;">AI Decision Levels</div>
+            <div class="val-row">Aggressive Entry: <span id="a-entry" style="color:var(--gold)">--</span></div>
+            <div class="val-row">Safe Entry (S1): <span id="s1" style="color:var(--green)">--</span></div>
+            <div class="val-row">Exit Target (R1): <span id="r1" style="color:var(--red)">--</span></div>
+            <div class="val-row">Stop Loss (Safe): <span id="sl" style="color:var(--red)">--</span></div>
         </div>
     </div>
 
@@ -71,7 +78,7 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let currentID = 'bitcoin', s1 = 0, r1 = 0, price = 0;
+        let currentID = 'bitcoin', s1_val = 0, r1_val = 0, price_val = 0;
 
         async function getCoins() {
             const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50');
@@ -80,7 +87,8 @@
             data.forEach(c => {
                 let opt = document.createElement('option');
                 opt.value = c.id; opt.dataset.symbol = c.symbol.toUpperCase() + 'USDT';
-                opt.innerText = c.name; if(c.id === 'bitcoin') opt.selected = true;
+                opt.innerText = c.name + " ("+c.symbol.toUpperCase()+")"; 
+                if(c.id === 'bitcoin') opt.selected = true;
                 sel.appendChild(opt);
             });
             initUpdate();
@@ -91,63 +99,68 @@
             const sym = sel.options[sel.selectedIndex].dataset.symbol;
             const tf = document.getElementById('tf-selector').value;
             currentID = sel.value;
-            new TradingView.widget({ "autosize": true, "symbol": "BINANCE:"+sym, "interval": tf, "theme": "dark", "container_id": "tv-widget", "drawings_access": {"type": "black", "tools": [{"name": "Trend Line"}]}, "allow_symbol_change": true });
+            document.getElementById('display-name').innerText = sel.options[sel.selectedIndex].text;
+            
+            new TradingView.widget({
+                "autosize": true, "symbol": "BINANCE:"+sym, "interval": tf,
+                "theme": "dark", "container_id": "tv-widget",
+                "drawings_access": {"type": "black", "tools": [{"name": "Trend Line"}]},
+                "allow_symbol_change": true, "toolbar_bg": "#1e2329"
+            });
             fetchData();
         }
 
         async function fetchData() {
             try {
+                // OHLC for Levels
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${currentID}/ohlc?vs_currency=usd&days=1`);
                 const ohlc = await res.json();
                 const last = ohlc[ohlc.length-1];
-                const p = (last[2]+last[3]+last[4])/3;
-                r1 = (2*p)-last[3]; s1 = (2*p)-last[2];
+                const pivot = (last[2]+last[3]+last[4])/3;
+                r1_val = (2*pivot)-last[3]; s1_val = (2*pivot)-last[2];
 
-                const pRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd`);
+                // Simple Price & Change
+                const pRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd&include_24hr_change=true`);
                 const pData = await pRes.json();
-                price = pData[currentID].usd;
+                price_val = pData[currentID].usd;
+                const change = pData[currentID].usd_24h_change;
 
-                calculateLevels();
-                updateEducation();
+                // Update UI
+                document.getElementById('live-price').innerText = '$'+price_val.toLocaleString();
+                document.getElementById('s1').innerText = s1_val.toFixed(2);
+                document.getElementById('r1').innerText = r1_val.toFixed(2);
+                document.getElementById('a-entry').innerText = price_val.toFixed(2);
+                document.getElementById('sl').innerText = (s1_val * 0.995).toFixed(2);
+
+                // Sentiment Bar Logic
+                let buyP = 50 + (change / 2); // Simple math for simulation
+                buyP = Math.min(Math.max(buyP, 20), 80);
+                document.getElementById('buy-p').style.width = buyP + "%";
+                document.getElementById('sell-p').style.width = (100-buyP) + "%";
+
+                // Fear & Greed Simulation based on 24h Change
+                const fg = document.getElementById('fg-val');
+                if(change > 5) { fg.innerText = "EXTREME GREED"; fg.style.color = "var(--green)"; }
+                else if(change > 0) { fg.innerText = "GREED"; fg.style.color = "#a5d6a7"; }
+                else if(change > -5) { fg.innerText = "FEAR"; fg.style.color = "#ef9a9a"; }
+                else { fg.innerText = "EXTREME FEAR"; fg.style.color = "var(--red)"; }
+
+                updateEducation(change);
             } catch(e) { console.log("Updating..."); }
         }
 
-        function calculateLevels() {
-            // Normal: Safe entries near S1
-            document.getElementById('n-entry').innerText = s1.toFixed(2);
-            document.getElementById('n-tp').innerText = r1.toFixed(2);
-            document.getElementById('n-sl').innerText = (s1 * 0.98).toFixed(2);
-
-            // Intermediate: Momentum entry above Pivot
-            let midEntry = (s1 + r1) / 2;
-            document.getElementById('i-entry').innerText = midEntry.toFixed(2);
-            document.getElementById('i-tp').innerText = (r1 * 1.02).toFixed(2);
-            document.getElementById('i-sl').innerText = (s1 * 0.99).toFixed(2);
-
-            // Aggressive: Scalp entry near current price
-            document.getElementById('a-entry').innerText = price.toFixed(2);
-            document.getElementById('a-tp').innerText = (price * 1.015).toFixed(2);
-            document.getElementById('a-sl').innerText = (price * 0.995).toFixed(2);
-        }
-
-        function updateEducation() {
-            const eduTips = [
-                "Candle Tip: Agar Support par 'Hammer' candle bane to reversal ka chance hota hai.",
-                "Trendline: Jab price trendline ko 3 bar touch kare, to breakout ke liye ready rahein.",
-                "RSI Insight: Agar price upar ja rahi hai aur RSI niche, to ye Bearish Divergence hai.",
-                "Volume: Breakout tab hi sahi hota hai jab volume pichli candles se zyada ho."
+        function updateEducation(change) {
+            const tips = [
+                "Advanced: Agar RSI 30 se niche hai aur 'Bullish Divergence' ban rahi hai, to entry confirm karein.",
+                "Scenario: Market is "+(change > 0 ? "BULLISH" : "BEARISH")+". Trendline breakout ka intezar karein.",
+                "Education: 'Morning Star' candlestick pattern hamesha support par talash karein.",
+                "Strategy: 200 EMA ke upar price ka matlab hai long-term Bull run."
             ];
-            const scenarios = [
-                `AGAR price $${r1.toFixed(0)} ke upar candle close kare, TO next target breakout hoga.`,
-                `AGAR price $${s1.toFixed(0)} ko tod de, TO market me panic selling aa sakti hai.`,
-                `AGAR RSI oversold ho aur price support par ho, TO ye perfect Buying zone hai.`
-            ];
-            document.getElementById('edu-text').innerText = "Mehrab's Mentor: " + eduTips[Math.floor(Math.random()*eduTips.length)];
-            document.getElementById('scenario-text').innerText = "Scenario: " + scenarios[Math.floor(Math.random()*scenarios.length)];
+            document.getElementById('edu-text').innerText = "Mehrab's Pro Insight: " + tips[Math.floor(Math.random()*tips.length)];
         }
 
         getCoins();
-        setInterval(fetchData, 40000);
+        setInterval(fetchData, 30000);
     </script>
 </body>
 </html>
