@@ -3,89 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mehrab AI - Paper Trading Terminal</title>
+    <title>Mehrab AI - Master Terminal</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 14px; }
-        .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 5px; font-size: 1.1rem; text-transform: uppercase; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
         
-        /* Wallet & Stats */
-        .wallet-bar { display: flex; justify-content: space-between; background: #2b3139; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--gold); }
-        .stat-box { text-align: center; flex: 1; }
-        .stat-val { display: block; font-weight: bold; font-size: 1.1rem; color: var(--gold); }
+        .branding { text-align: center; color: var(--gold); font-weight: bold; padding: 5px; text-transform: uppercase; border-bottom: 1px solid #333; margin-bottom: 8px; }
 
-        /* Trade History Table */
-        .history-card { background: var(--card); border-radius: 8px; padding: 12px; margin-top: 10px; border: 1px solid #444; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        th { text-align: left; color: #848e9c; padding: 8px; border-bottom: 1px solid #333; }
-        td { padding: 8px; border-bottom: 1px solid #222; }
-        .profit { color: var(--green); font-weight: bold; }
-        .loss { color: var(--red); font-weight: bold; }
+        /* Wallet Section */
+        .wallet-bar { display: flex; justify-content: space-between; background: #2b3139; padding: 8px; border-radius: 6px; margin-bottom: 10px; border: 1px solid var(--gold); }
+        .stat-val { font-weight: bold; color: var(--gold); }
 
-        .decoder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .decoder-card { background: #1c2127; border-left: 4px solid var(--gold); padding: 10px; border-radius: 6px; }
-        
-        #chart-container { height: 280px; border-radius: 8px; overflow: hidden; border: 1px solid #333; margin-top: 10px; }
+        /* Grid Layout */
+        .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+
+        /* Forecast & Decoder Cards */
+        .info-card { background: var(--card); border-radius: 8px; padding: 12px; border: 1px solid #333; }
+        .title-gold { color: var(--gold); font-weight: bold; font-size: 0.8rem; margin-bottom: 5px; border-bottom: 1px solid #444; padding-bottom: 3px; }
+
+        /* History Table */
+        .history-box { background: #161a1e; border-radius: 8px; padding: 10px; margin-top: 10px; border: 1px solid #444; max-height: 150px; overflow-y: auto; }
+        table { width: 100%; text-align: left; border-collapse: collapse; font-size: 0.75rem; }
+        th { color: #848e9c; padding-bottom: 5px; }
+        td { padding: 4px 0; border-bottom: 1px solid #222; }
+
+        #chart-container { height: 260px; border-radius: 8px; overflow: hidden; border: 1px solid #333; margin: 10px 0; }
         .controls { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
-        select, button { padding: 6px 10px; border-radius: 4px; border: none; background: #2b3139; color: white; cursor: pointer; }
+        select, button { padding: 5px 10px; border-radius: 4px; border: none; background: #2b3139; color: white; cursor: pointer; }
         button { background: var(--gold); color: black; font-weight: bold; }
+        .profit { color: var(--green); } .loss { color: var(--red); }
     </style>
 </head>
 <body>
 
-    <div class="branding">Mehrab AI - Auto Paper Trader</div>
+    <div class="branding">Mehrab Ali - Master AI Hub</div>
 
     <div class="wallet-bar">
-        <div class="stat-box">Balance: <span id="balance" class="stat-val">$10,000.00</span></div>
-        <div class="stat-box">Total P/L: <span id="total-pl" class="stat-val">$0.00</span></div>
-        <div class="stat-box">Status: <span id="bot-status" style="color:var(--green)">Bot Active</span></div>
+        <div>💰 Fund: <span id="balance" class="stat-val">$10,000</span></div>
+        <div>📈 P/L: <span id="total-pl" class="stat-val">$0.00</span></div>
+        <div>🤖 Bot: <span style="color:var(--green)">Online</span></div>
     </div>
 
-    <div class="decoder-grid">
-        <div class="decoder-card">
-            <div style="color:var(--gold); font-weight:bold; font-size:0.7rem;">AI SIGNAL</div>
-            <div id="ai-signal-text">Analyzing...</div>
+    <div class="main-grid">
+        <div class="info-card">
+            <div class="title-gold">📈 AI TRADE SETUP (H1)</div>
+            <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                <div style="color:var(--green)">ENTRY: <span id="entry-p">--</span></div>
+                <div style="color:var(--red)">SL: <span id="sl-p">--</span></div>
+                <div style="color:var(--gold)">TP: <span id="tp-p">--</span></div>
+            </div>
         </div>
-        <div class="decoder-card">
-            <div style="color:var(--gold); font-weight:bold; font-size:0.7rem;">CURRENT TRADE</div>
-            <div id="active-trade">No active trade</div>
+
+        <div class="info-card">
+            <div class="title-gold">🕯️ MARKET KA MOOD (ASAN)</div>
+            <div id="candle-easy" style="font-style:italic;">Scanning candles...</div>
         </div>
     </div>
 
     <div class="controls">
         <select id="coin-selector" onchange="initUpdate()"></select>
-        <button onclick="fetchData()">🔄 Force Sync</button>
+        <button onclick="fetchData()">Manual Sync</button>
     </div>
 
     <div id="chart-container"><div id="tv-widget" style="height: 100%;"></div></div>
 
-    <div class="history-card">
-        <div style="color:var(--gold); font-weight:bold; margin-bottom:8px;">📜 TRADE LOGS (Mehrab AI Bot)</div>
-        <table id="history-table">
+    <div class="history-box">
+        <div class="title-gold">📜 MEHRAB AI TRADE LOGS</div>
+        <table>
             <thead>
-                <tr>
-                    <th>Coin</th>
-                    <th>Type</th>
-                    <th>Entry</th>
-                    <th>Exit</th>
-                    <th>P/L ($)</th>
-                </tr>
+                <tr><th>Coin</th><th>Side</th><th>Entry</th><th>Exit</th><th>Profit/Loss</th></tr>
             </thead>
-            <tbody id="history-body">
-                </tbody>
+            <tbody id="history-body"></tbody>
         </table>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let balance = 10000;
-        let totalPL = 0;
-        let activeTrade = null;
-        let currentID = 'bitcoin';
-        let currentPrice = 0;
+        let balance = 10000; let totalPL = 0; let activeTrade = null;
+        let currentID = 'bitcoin'; let currentPrice = 0;
 
         async function getCoins() {
-            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10');
+            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20');
             const data = await res.json();
             const sel = document.getElementById('coin-selector');
             data.forEach(c => {
@@ -113,23 +111,31 @@
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${currentID}/ohlc?vs_currency=usd&days=1`);
                 const ohlc = await res.json();
                 const last = ohlc[ohlc.length - 1];
-                const high = last[2], low = last[3], close = last[4];
+                const open = last[1], high = last[2], low = last[3], close = last[4];
                 currentPrice = close;
 
-                // AI Logic (Pivot Point)
-                const pivot = (high + low + close) / 3;
-                const s1 = (2 * pivot) - high;
-                const r1 = (2 * pivot) - low;
+                // --- 1. ASAN DECODER ---
+                let mood = "";
+                const body = Math.abs(close - open);
+                if ((high - Math.max(open, close)) > body * 2) mood = "Upar se rejection! Sellers zor mein hain.";
+                else if ((Math.min(open, close) - low) > body * 2) mood = "Niche se support! Buyers push kar rahay hain.";
+                else if (close > open) mood = "Green power! Market upar jana chahti hai.";
+                else mood = "Sellers ka control hai abhi.";
+                document.getElementById('candle-easy').innerText = mood;
 
-                // Decision Making
-                if (currentPrice <= s1) {
-                    document.getElementById('ai-signal-text').innerText = "STRONG BUY (Support Hit)";
-                    executeTrade('BUY');
-                } else if (currentPrice >= r1) {
-                    document.getElementById('ai-signal-text').innerText = "STRONG SELL (Resistance Hit)";
-                    executeTrade('SELL');
+                // --- 2. FORECAST ---
+                const pivot = (high + low + close) / 3;
+                const r1 = (2 * pivot) - low;
+                const s1 = (2 * pivot) - high;
+                document.getElementById('entry-p').innerText = r1.toFixed(1);
+                document.getElementById('sl-p').innerText = s1.toFixed(1);
+                document.getElementById('tp-p').innerText = (r1 * 1.05).toFixed(1);
+
+                // --- 3. BOT LOGIC ---
+                if (!activeTrade) {
+                    if (currentPrice <= s1) executeTrade('BUY');
+                    else if (currentPrice >= r1) executeTrade('SELL');
                 } else {
-                    document.getElementById('ai-signal-text').innerText = "Waiting for entry...";
                     checkExit();
                 }
 
@@ -137,51 +143,23 @@
         }
 
         function executeTrade(type) {
-            if (activeTrade) return; // Only 1 trade at a time
-
-            activeTrade = {
-                coin: currentID.toUpperCase(),
-                type: type,
-                entry: currentPrice,
-                amount: 1000 // Fixed $1000 per trade
-            };
-            document.getElementById('active-trade').innerText = `${type} at $${currentPrice.toLocaleString()}`;
+            activeTrade = { coin: currentID.toUpperCase(), type: type, entry: currentPrice, amount: 1000 };
         }
 
         function checkExit() {
-            if (!activeTrade) return;
-
-            // Simple Exit: 1.5% Profit or 1% Loss
             let change = ((currentPrice - activeTrade.entry) / activeTrade.entry) * 100;
             if (activeTrade.type === 'SELL') change = -change;
 
-            if (change >= 1.5 || change <= -1.0) {
-                closeTrade(currentPrice, change);
+            if (change >= 1.2 || change <= -0.8) {
+                const pVal = (activeTrade.amount * change) / 100;
+                balance += pVal; totalPL += pVal;
+                document.getElementById('balance').innerText = `$${balance.toFixed(0)}`;
+                document.getElementById('total-pl').innerText = `$${totalPL.toFixed(2)}`;
+                
+                const row = `<tr><td>${activeTrade.coin}</td><td>${activeTrade.type}</td><td>${activeTrade.entry.toFixed(1)}</td><td>${currentPrice.toFixed(1)}</td><td class="${pVal>=0?'profit':'loss'}">${pVal.toFixed(2)}</td></tr>`;
+                document.getElementById('history-body').insertAdjacentHTML('afterbegin', row);
+                activeTrade = null;
             }
-        }
-
-        function closeTrade(exitPrice, pPercent) {
-            const profitVal = (activeTrade.amount * pPercent) / 100;
-            balance += profitVal;
-            totalPL += profitVal;
-
-            // Update UI
-            document.getElementById('balance').innerText = `$${balance.toFixed(2)}`;
-            document.getElementById('total-pl').innerText = `$${totalPL.toFixed(2)}`;
-            document.getElementById('total-pl').className = totalPL >= 0 ? 'stat-val profit' : 'stat-val loss';
-
-            // Add to History Table
-            const row = `<tr>
-                <td>${activeTrade.coin}</td>
-                <td>${activeTrade.type}</td>
-                <td>$${activeTrade.entry.toFixed(2)}</td>
-                <td>$${exitPrice.toFixed(2)}</td>
-                <td class="${profitVal >= 0 ? 'profit' : 'loss'}">${profitVal >= 0 ? '+' : ''}${profitVal.toFixed(2)}</td>
-            </tr>`;
-            document.getElementById('history-body').insertAdjacentHTML('afterbegin', row);
-
-            activeTrade = null;
-            document.getElementById('active-trade').innerText = "No active trade";
         }
 
         getCoins();
