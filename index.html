@@ -3,119 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETH Pro Trader Dashboard</title>
+    <title>Pro Crypto Sentinel - Multi-Timeframe</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0b0e11; color: #eaecef; text-align: center; padding: 20px; }
-        .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
-        .card { background: #1e2329; padding: 20px; border-radius: 12px; min-width: 250px; border: 1px solid #333; }
-        .price { font-size: 2rem; color: #f0b90b; font-weight: bold; }
-        .signal-box { margin-top: 10px; padding: 10px; border-radius: 8px; font-weight: bold; text-transform: uppercase; }
-        .buy { background: #02c076; color: white; }
-        .sell { background: #cf304a; color: white; }
-        .neutral { background: #474d57; color: white; }
-        .fgi { font-size: 1.5rem; color: #00ffcc; }
-        h3 { font-size: 0.9rem; color: #848e9c; margin-bottom: 15px; }
-        .timeframe-label { font-size: 0.8rem; color: #848e9c; display: block; margin-top: 5px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0b0e11; color: #eaecef; margin: 0; padding: 15px; }
+        .container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .card { background: #1e2329; border-radius: 12px; padding: 15px; border: 1px solid #333; min-width: 300px; flex: 1; }
+        
+        /* Chart Styling */
+        #chart-container { height: 500px; width: 100%; margin-top: 15px; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+
+        /* Search & Filters */
+        .controls-bar { margin-bottom: 20px; text-align: center; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        select, input { background: #2b3139; color: white; border: 1px solid #474d57; padding: 10px; border-radius: 5px; outline: none; }
+        button { background: #f0b90b; color: black; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #d3a108; }
+
+        .price-display { font-size: 2.2rem; color: #f0b90b; margin: 10px 0; font-weight: bold; }
+        .buy-signal { color: #02c076; font-weight: bold; background: rgba(2, 192, 118, 0.1); padding: 5px; border-radius: 4px; }
+        .sell-signal { color: #cf304a; font-weight: bold; background: rgba(207, 48, 74, 0.1); padding: 5px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <h1 style="color: #f0b90b;">ETH/USDT Pro Sentinel</h1>
+    <div class="controls-bar">
+        <select id="coin-selector" onchange="updateDashboard()">
+            <option value="ethereum">Loading Coins...</option>
+        </select>
 
-    <div class="grid">
+        <select id="timeframe-selector" onchange="updateDashboard()">
+            <option value="15">15 Minutes (Scalping)</option>
+            <option value="60" selected>1 Hour (Day Trade)</option>
+            <option value="240">4 Hours (Swing)</option>
+            <option value="D">1 Day (Long Term)</option>
+        </select>
+
+        <input type="number" id="alert-price" placeholder="Target Price ($)">
+        <button onclick="setAlert()">Set Alert</button>
+    </div>
+
+    <div class="container">
         <div class="card">
-            <h3>Live ETH Price</h3>
-            <div class="price" id="eth-price">Loading...</div>
-            <div id="price-change">--%</div>
-            <hr style="border:0.5px solid #333; margin:15px 0;">
-            <h3>Fear & Greed Index</h3>
-            <div class="fgi" id="fgi-value">--</div>
-            <div id="fgi-label" style="font-size:0.8rem;">Loading...</div>
+            <h3>Live: <span id="coin-name">Ethereum</span></h3>
+            <div class="price-display" id="live-price">$0.00</div>
+            <div id="price-change">--% (24h)</div>
+            <div id="signal-advice" style="margin-top: 12px;">Analyzing...</div>
         </div>
 
         <div class="card">
-            <h3>Trading Signals (AI Advice)</h3>
-            
-            <div>
-                <span class="timeframe-label">15 Minutes (Scalping)</span>
-                <div id="signal-15m" class="signal-box neutral">Calculating...</div>
-            </div>
-
-            <div>
-                <span class="timeframe-label">1 Hour (Intraday)</span>
-                <div id="signal-1h" class="signal-box neutral">Calculating...</div>
-            </div>
-
-            <div>
-                <span class="timeframe-label">1 Day (Swing Trade)</span>
-                <div id="signal-1d" class="signal-box neutral">Calculating...</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>Custom Price Alert</h3>
-            <input type="number" id="alert-price" placeholder="Target Price" style="width:80%; padding:10px; border-radius:5px; border:none; margin-bottom:10px;">
-            <button onclick="setAlert()" style="width:86%; padding:10px; background:#f0b90b; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Set Alert</button>
-            <p id="alert-status" style="font-size:0.8rem; color:#f0b90b; margin-top:10px;">No alerts</p>
+            <h3>Market Sentiment</h3>
+            <p>Fear & Greed Index: <strong id="fgi-val" style="color:#00ffcc;">--</strong></p>
+            <hr style="border:0.5px solid #333;">
+            <div id="active-alerts" style="font-size: 0.85rem; color: #848e9c;">No active alerts</div>
         </div>
     </div>
 
-    <script>
-        let targetPrice = null;
+    <div id="chart-container">
+        <div id="tradingview_widget" style="height: 100%;"></div>
+    </div>
 
-        // Function to generate signals based on random-mocked RSI (Since full TA needs a backend)
-        // In real link, we use Binance Technical APIs
-        function updateSignals() {
-            const timeframes = ['15m', '1h', '1d'];
-            timeframes.forEach(tf => {
-                const randomRSI = Math.floor(Math.random() * 100); // Mocking RSI value
-                const element = document.getElementById(`signal-${tf}`);
-                
-                if (randomRSI < 35) {
-                    element.innerText = "Best Buy Rate";
-                    element.className = "signal-box buy";
-                } else if (randomRSI > 65) {
-                    element.innerText = "Best Sell Rate";
-                    element.className = "signal-box sell";
-                } else {
-                    element.innerText = "Hold / Neutral";
-                    element.className = "signal-box neutral";
-                }
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+        let currentSymbol = 'ETHUSDT';
+        let currentID = 'ethereum';
+        let currentTF = '60';
+        let alerts = [];
+
+        // 1. Fetch Top 300 Coins
+        async function fetchCoins() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=300&page=1');
+                const coins = await res.json();
+                const selector = document.getElementById('coin-selector');
+                selector.innerHTML = '';
+                coins.forEach(coin => {
+                    let opt = document.createElement('option');
+                    opt.value = coin.id;
+                    opt.dataset.symbol = coin.symbol.toUpperCase() + 'USDT';
+                    opt.innerText = `${coin.name} (${coin.symbol.toUpperCase()})`;
+                    if(coin.id === 'ethereum') opt.selected = true;
+                    selector.appendChild(opt);
+                });
+            } catch (e) { console.error("Coin fetch failed"); }
+        }
+
+        // 2. Main Update Function
+        function updateDashboard() {
+            const coinSel = document.getElementById('coin-selector');
+            const tfSel = document.getElementById('timeframe-selector');
+            
+            const selectedCoin = coinSel.options[coinSel.selectedIndex];
+            currentID = selectedCoin.value;
+            currentSymbol = selectedCoin.dataset.symbol;
+            currentTF = tfSel.value;
+            
+            document.getElementById('coin-name').innerText = selectedCoin.innerText;
+            
+            loadChart(currentSymbol, currentTF);
+            fetchPrice();
+        }
+
+        // 3. Load Chart with Timeframe
+        function loadChart(symbol, interval) {
+            new TradingView.widget({
+                "autosize": true,
+                "symbol": "BINANCE:" + symbol,
+                "interval": interval,
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_widget"
             });
         }
 
-        // Live Price from Binance
-        const ws = new WebSocket('wss://stream.binance.com:9443/ws/ethusdt@ticker');
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            const price = parseFloat(data.c).toFixed(2);
-            document.getElementById('eth-price').innerText = `$${price}`;
-            document.getElementById('price-change').innerText = `${data.P}%`;
-            document.getElementById('price-change').style.color = data.P >= 0 ? '#02c076' : '#cf304a';
+        // 4. Price & Signal Logic
+        async function fetchPrice() {
+            try {
+                const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd&include_24hr_change=true`);
+                const data = await res.json();
+                const price = data[currentID].usd;
+                const change = data[currentID].usd_24h_change;
 
-            if (targetPrice && price >= targetPrice) {
-                alert(`🚀 Target Hit: ETH is $${price}`);
-                targetPrice = null;
-            }
-        };
+                document.getElementById('live-price').innerText = `$${price.toLocaleString()}`;
+                const changeEl = document.getElementById('price-change');
+                changeEl.innerText = `${change.toFixed(2)}% (24h)`;
+                changeEl.style.color = change >= 0 ? '#02c076' : '#cf304a';
 
-        // Fear & Greed Index
-        async function fetchFGI() {
-            const res = await fetch('https://api.alternative.me/fng/');
-            const json = await res.json();
-            document.getElementById('fgi-value').innerText = json.data[0].value;
-            document.getElementById('fgi-label').innerText = json.data[0].value_classification;
+                // Simple Logic for Advice
+                const adv = document.getElementById('signal-advice');
+                if (change < -4) {
+                    adv.innerHTML = `<span class="buy-signal">BUY ADVICE: Heavy Dip</span>`;
+                } else if (change > 6) {
+                    adv.innerHTML = `<span class="sell-signal">SELL ADVICE: Overbought</span>`;
+                } else {
+                    adv.innerHTML = `<span style="color:#848e9c">NEUTRAL: Side-ways movement</span>`;
+                }
+
+                // Check Alerts
+                alerts.forEach((a, i) => {
+                    if (price >= a) {
+                        alert(`🎯 TARGET REACHED: ${currentID.toUpperCase()} is $${price}`);
+                        alerts.splice(i, 1);
+                        renderAlerts();
+                    }
+                });
+            } catch (e) { console.log("Price update error"); }
         }
 
         function setAlert() {
-            targetPrice = document.getElementById('alert-price').value;
-            document.getElementById('alert-status').innerText = `Alert active at $${targetPrice}`;
+            const val = document.getElementById('alert-price').value;
+            if(val) {
+                alerts.push(parseFloat(val));
+                renderAlerts();
+                document.getElementById('alert-price').value = '';
+            }
         }
 
-        // Initial setup
-        fetchFGI();
-        updateSignals();
-        setInterval(updateSignals, 10000); // Refresh signals every 10 seconds
+        function renderAlerts() {
+            const div = document.getElementById('active-alerts');
+            div.innerHTML = alerts.length ? alerts.map(a => `<div>🔔 Alert at $${a}</div>`).join('') : 'No active alerts';
+        }
+
+        async function fetchFGI() {
+            const res = await fetch('https://api.alternative.me/fng/');
+            const d = await res.json();
+            document.getElementById('fgi-val').innerText = `${d.data[0].value} (${d.data[0].value_classification})`;
+        }
+
+        // Init
+        fetchCoins().then(() => {
+            updateDashboard();
+            fetchFGI();
+            setInterval(fetchPrice, 15000);
+        });
     </script>
 </body>
 </html>
