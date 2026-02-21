@@ -3,80 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Crypto Advisor - Mehrab Ali</title>
+    <title>AI Mentor Terminal - Mehrab Ali</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
-        
         .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 5px; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
-        .knowledge-stream { background: linear-gradient(90deg, #1e2329, #2b3139); border-left: 4px solid var(--gold); padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.95rem; color: #fff; }
-
-        /* Forecast Section Styling (Video Style) */
-        .forecast-container { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; margin-bottom: 10px; font-size: 0.85rem; line-height: 1.6; }
-        .forecast-title { color: var(--gold); font-weight: bold; font-size: 1rem; border-bottom: 1px solid #444; margin-bottom: 10px; padding-bottom: 5px; }
-        .scenario-box { margin-top: 10px; padding: 10px; border-radius: 5px; background: rgba(255,255,255,0.03); }
-        .bull-text { color: var(--green); font-weight: bold; }
-        .bear-text { color: var(--red); font-weight: bold; }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; }
-        .price-val { font-size: 2rem; color: var(--gold); font-weight: bold; }
         
-        /* Chota Chart with Trendlines */
-        #chart-container { height: 320px; border-radius: 10px; overflow: hidden; border: 1px solid #333; margin-top: 5px; }
+        /* Mentor & Education Box */
+        .edu-box { background: linear-gradient(90deg, #1e2329, #2b3139); border-left: 4px solid var(--gold); padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem; line-height: 1.4; }
+        .scenario-box { background: rgba(240, 185, 11, 0.05); border: 1px dashed var(--gold); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.85rem; }
 
+        /* Trading Levels Grid */
+        .levels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .style-card { background: var(--card); border-radius: 8px; padding: 12px; border: 1px solid #333; text-align: left; }
+        .style-header { font-weight: bold; border-bottom: 1px solid #444; margin-bottom: 8px; padding-bottom: 5px; display: flex; justify-content: space-between; }
+        
+        .val-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
+        .entry { color: var(--gold); }
+        .tp { color: var(--green); }
+        .sl { color: var(--red); }
+
+        #chart-container { height: 400px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
         .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 10px; }
-        select, input, button { padding: 8px; border-radius: 5px; border: none; background: #2b3139; color: white; }
-        button { background: var(--gold); color: black; font-weight: bold; cursor: pointer; }
+        select, button { padding: 10px; border-radius: 5px; border: none; background: #2b3139; color: white; cursor: pointer; }
+        button { background: var(--gold); color: black; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="branding">Mehrab Ali - Smart Terminal</div>
+    <div class="branding">Mehrab Ali - AI Mentor Terminal</div>
     
-    <div class="knowledge-stream">
-        <strong style="color:var(--gold)">● MEHRAB'S LIVE INSIGHT:</strong> <span id="mentor-text">Syncing market data...</span>
-    </div>
-
-    <div class="forecast-container" id="ai-forecast">
-        <div class="forecast-title">📊 <span id="coin-pair">BTC/USD</span> - H1 Technical Forecast</div>
-        
-        <div>🔑 <strong>Key Levels:</strong> <span id="key-levels">Calculating...</span></div>
-        
-        <div class="scenario-box">
-            <div class="bull-text">🚀 Scenario 1 - Bullish Breakout</div>
-            <div id="bull-logic">Waiting for candle close above resistance...</div>
-            <strong>Entry:</strong> <span id="entry-p">--</span> | <strong>SL:</strong> <span id="sl-p">--</span> | <strong>TP:</strong> <span id="tp-p">--</span>
-        </div>
-
-        <div class="scenario-box">
-            <div class="bear-text">📉 Scenario 2 - Bearish Rejection</div>
-            <div id="bear-logic">If price breaks trendline support...</div>
-        </div>
-    </div>
+    <div class="edu-box" id="edu-text">Loading Mehrab's Education Stream...</div>
+    <div class="scenario-box" id="scenario-text">Scenario Analysis: Fetching data...</div>
 
     <div class="controls">
         <select id="coin-selector" onchange="initUpdate()"></select>
         <select id="tf-selector" onchange="initUpdate()">
-            <option value="15">15m</option>
-            <option value="60" selected>1h</option>
-            <option value="D">1D</option>
+            <option value="15">15m (Scalp)</option>
+            <option value="60" selected>1h (Swing)</option>
+            <option value="D">1D (Invest)</option>
         </select>
-        <button onclick="setAlert()">Set Alert</button>
+        <button onclick="fetchData()">Refresh Levels</button>
     </div>
 
-    <div class="grid">
-        <div class="card">
-            <h3 id="display-name" style="margin:0; font-size: 1rem;">Loading...</h3>
-            <div class="price-val" id="live-price">$0.00</div>
+    <div class="levels-grid">
+        <div class="style-card">
+            <div class="style-header"><span>Normal Trader</span> <small>Low Risk</small></div>
+            <div class="val-row">Entry: <span class="entry" id="n-entry">--</span></div>
+            <div class="val-row">Take Profit: <span class="tp" id="n-tp">--</span></div>
+            <div class="val-row">Stop Loss: <span class="sl" id="n-sl">--</span></div>
         </div>
-
-        <div class="card">
-            <h3 style="margin:0; font-size: 1rem;">Support & Resistance</h3>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <div style="flex:1;">R: <strong id="r1" style="color:var(--red)">--</strong></div>
-                <div style="flex:1;">S: <strong id="s1" style="color:var(--green)">--</strong></div>
-            </div>
+        <div class="style-card">
+            <div class="style-header"><span>Intermediate</span> <small>Mid Risk</small></div>
+            <div class="val-row">Entry: <span class="entry" id="i-entry">--</span></div>
+            <div class="val-row">Take Profit: <span class="tp" id="i-tp">--</span></div>
+            <div class="val-row">Stop Loss: <span class="sl" id="i-sl">--</span></div>
+        </div>
+        <div class="style-card">
+            <div class="style-header"><span>Aggressive</span> <small>High Risk</small></div>
+            <div class="val-row">Entry: <span class="entry" id="a-entry">--</span></div>
+            <div class="val-row">Take Profit: <span class="tp" id="a-tp">--</span></div>
+            <div class="val-row">Stop Loss: <span class="sl" id="a-sl">--</span></div>
         </div>
     </div>
 
@@ -84,10 +71,10 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let currentID = 'bitcoin', s1_val = 0, r1_val = 0;
+        let currentID = 'bitcoin', s1 = 0, r1 = 0, price = 0;
 
         async function getCoins() {
-            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30');
+            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50');
             const data = await res.json();
             const sel = document.getElementById('coin-selector');
             data.forEach(c => {
@@ -104,21 +91,7 @@
             const sym = sel.options[sel.selectedIndex].dataset.symbol;
             const tf = document.getElementById('tf-selector').value;
             currentID = sel.value;
-            document.getElementById('coin-pair').innerText = sym;
-            document.getElementById('display-name').innerText = sel.options[sel.selectedIndex].text;
-            
-            // Chart size chota aur drawing tools on
-            new TradingView.widget({
-                "autosize": true,
-                "symbol": "BINANCE:"+sym,
-                "interval": tf,
-                "theme": "dark",
-                "container_id": "tv-widget",
-                "drawings_access": {"type": "black", "tools": [{"name": "Trend Line"}]},
-                "studies": ["RSI@tv-basicstudies"],
-                "hide_top_toolbar": false,
-                "allow_symbol_change": true
-            });
+            new TradingView.widget({ "autosize": true, "symbol": "BINANCE:"+sym, "interval": tf, "theme": "dark", "container_id": "tv-widget", "drawings_access": {"type": "black", "tools": [{"name": "Trend Line"}]}, "allow_symbol_change": true });
             fetchData();
         }
 
@@ -127,35 +100,54 @@
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${currentID}/ohlc?vs_currency=usd&days=1`);
                 const ohlc = await res.json();
                 const last = ohlc[ohlc.length-1];
-                const high = last[2], low = last[3], close = last[4];
-                
-                const pivot = (high + low + close) / 3;
-                r1_val = (2 * pivot) - low;
-                s1_val = (2 * pivot) - high;
-
-                document.getElementById('r1').innerText = r1_val.toFixed(2);
-                document.getElementById('s1').innerText = s1_val.toFixed(2);
-                document.getElementById('key-levels').innerText = `${s1_val.toFixed(0)} - ${r1_val.toFixed(0)}`;
+                const p = (last[2]+last[3]+last[4])/3;
+                r1 = (2*p)-last[3]; s1 = (2*p)-last[2];
 
                 const pRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd`);
                 const pData = await pRes.json();
-                const price = pData[currentID].usd;
-                document.getElementById('live-price').innerText = '$' + price.toLocaleString();
+                price = pData[currentID].usd;
 
-                // Video Style Forecast Logic
-                document.getElementById('bull-logic').innerText = `Condition: ${document.getElementById('tf-selector').value}H candle close above ${r1_val.toFixed(0)}`;
-                document.getElementById('entry-p').innerText = (r1_val * 1.002).toFixed(2);
-                document.getElementById('sl-p').innerText = (s1_val * 0.995).toFixed(2);
-                document.getElementById('tp-p').innerText = (r1_val * 1.05).toFixed(2);
-
-                document.getElementById('mentor-text').innerText = `Mehrab's AI: ${currentID.toUpperCase()} is testing ${price > pivot ? 'Resistance' : 'Support'}. Watch volume!`;
-
+                calculateLevels();
+                updateEducation();
             } catch(e) { console.log("Updating..."); }
         }
 
+        function calculateLevels() {
+            // Normal: Safe entries near S1
+            document.getElementById('n-entry').innerText = s1.toFixed(2);
+            document.getElementById('n-tp').innerText = r1.toFixed(2);
+            document.getElementById('n-sl').innerText = (s1 * 0.98).toFixed(2);
+
+            // Intermediate: Momentum entry above Pivot
+            let midEntry = (s1 + r1) / 2;
+            document.getElementById('i-entry').innerText = midEntry.toFixed(2);
+            document.getElementById('i-tp').innerText = (r1 * 1.02).toFixed(2);
+            document.getElementById('i-sl').innerText = (s1 * 0.99).toFixed(2);
+
+            // Aggressive: Scalp entry near current price
+            document.getElementById('a-entry').innerText = price.toFixed(2);
+            document.getElementById('a-tp').innerText = (price * 1.015).toFixed(2);
+            document.getElementById('a-sl').innerText = (price * 0.995).toFixed(2);
+        }
+
+        function updateEducation() {
+            const eduTips = [
+                "Candle Tip: Agar Support par 'Hammer' candle bane to reversal ka chance hota hai.",
+                "Trendline: Jab price trendline ko 3 bar touch kare, to breakout ke liye ready rahein.",
+                "RSI Insight: Agar price upar ja rahi hai aur RSI niche, to ye Bearish Divergence hai.",
+                "Volume: Breakout tab hi sahi hota hai jab volume pichli candles se zyada ho."
+            ];
+            const scenarios = [
+                `AGAR price $${r1.toFixed(0)} ke upar candle close kare, TO next target breakout hoga.`,
+                `AGAR price $${s1.toFixed(0)} ko tod de, TO market me panic selling aa sakti hai.`,
+                `AGAR RSI oversold ho aur price support par ho, TO ye perfect Buying zone hai.`
+            ];
+            document.getElementById('edu-text').innerText = "Mehrab's Mentor: " + eduTips[Math.floor(Math.random()*eduTips.length)];
+            document.getElementById('scenario-text').innerText = "Scenario: " + scenarios[Math.floor(Math.random()*scenarios.length)];
+        }
+
         getCoins();
-        setInterval(fetchData, 30000);
-        function setAlert() { alert("Alert Registered!"); }
+        setInterval(fetchData, 40000);
     </script>
 </body>
 </html>
