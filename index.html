@@ -3,74 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced AI Terminal - Mehrab Ali</title>
+    <title>AI Crypto Decoder - Mehrab Ali</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; }
         
-        .header-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
-        .branding { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-transform: uppercase; }
+        .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 5px; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
         
-        /* Fear & Greed Meter */
-        .fg-meter { background: #2b3139; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; border: 1px solid var(--gold); }
-
-        /* Advanced Knowledge Stream */
-        .edu-box { background: linear-gradient(90deg, #1e2329, #2b3139); border-left: 4px solid var(--gold); padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem; border-right: 4px solid var(--gold); }
+        /* NEW: AI Pattern Decoder Section */
+        .decoder-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .decoder-card { background: #161a1e; border-top: 3px solid var(--gold); padding: 12px; border-radius: 8px; font-size: 0.85rem; }
+        .decoder-title { font-weight: bold; color: var(--gold); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+        .logic-highlight { background: rgba(240, 185, 11, 0.1); padding: 5px; border-radius: 4px; border-left: 3px solid var(--gold); margin-top: 5px; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; position: relative; overflow: hidden; }
+        .card { background: var(--card); border-radius: 10px; padding: 15px; border: 1px solid #333; }
+        .price-val { font-size: 1.8rem; color: var(--gold); font-weight: bold; }
         
-        /* Heatmap Effect */
-        .price-val { font-size: 2.2rem; font-weight: bold; margin: 10px 0; }
-        .sentiment-bar { height: 4px; background: #333; border-radius: 2px; margin-top: 10px; display: flex; }
-        .buy-power { background: var(--green); transition: 1s; }
-        .sell-power { background: var(--red); transition: 1s; }
-
-        .style-card { background: #161a1e; border-radius: 8px; padding: 12px; border: 1px solid #444; }
-        .val-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; border-bottom: 1px solid #2b3139; padding-bottom: 2px; }
-        
-        #chart-container { height: 420px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
-        .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px; }
-        select, button { padding: 10px; border-radius: 6px; border: none; background: #2b3139; color: white; cursor: pointer; border: 1px solid #444; }
+        #chart-container { height: 300px; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+        .controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+        select, button { padding: 8px; border-radius: 5px; border: none; background: #2b3139; color: white; cursor: pointer; }
         button { background: var(--gold); color: black; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header-box">
-        <div class="branding">Mehrab Ali AI Pro</div>
-        <div class="fg-meter">Market Sentiment: <span id="fg-val">NEUTRAL</span></div>
+    <div class="branding">Mehrab Ali - AI Pattern Terminal</div>
+
+    <div class="decoder-container">
+        <div class="decoder-card">
+            <div class="decoder-title">🕯️ Candle Pattern Decoder</div>
+            <div id="candle-logic">Scanning current candle formation...</div>
+            <div id="candle-result" class="logic-highlight">Next Move: Analyzing...</div>
+        </div>
+
+        <div class="decoder-card">
+            <div class="decoder-title">📊 Indicator Signals (RSI/MA)</div>
+            <div id="indicator-logic">Checking RSI & EMA levels...</div>
+            <div id="indicator-result" class="logic-highlight">Advice: Standby...</div>
+        </div>
     </div>
-    
-    <div class="edu-box" id="edu-text">Initializing Advanced Neural Logic...</div>
 
     <div class="controls">
         <select id="coin-selector" onchange="initUpdate()"></select>
         <select id="tf-selector" onchange="initUpdate()">
-            <option value="15">15m (Scalp)</option>
-            <option value="60" selected>1h (Swing)</option>
-            <option value="D">1D (Hold)</option>
+            <option value="15">15m</option>
+            <option value="60" selected>1h</option>
+            <option value="D">1D</option>
         </select>
-        <button onclick="fetchData()">🔄 Sync Data</button>
+        <button onclick="fetchData()">Manual Sync</button>
     </div>
 
     <div class="grid">
-        <div class="card" id="price-card">
-            <h3 id="display-name" style="margin:0; font-size: 0.9rem; color:#848e9c;">Market Live</h3>
+        <div class="card">
+            <h3 id="display-name" style="margin:0; font-size: 0.9rem;">Coin</h3>
             <div class="price-val" id="live-price">$0.00</div>
-            <div style="font-size:0.75rem;">Order Flow Sentiment:</div>
-            <div class="sentiment-bar">
-                <div id="buy-p" class="buy-power"></div>
-                <div id="sell-p" class="sell-power"></div>
-            </div>
         </div>
-
-        <div class="style-card">
-            <div style="color:var(--gold); font-weight:bold; margin-bottom:8px; font-size:0.9rem;">AI Decision Levels</div>
-            <div class="val-row">Aggressive Entry: <span id="a-entry" style="color:var(--gold)">--</span></div>
-            <div class="val-row">Safe Entry (S1): <span id="s1" style="color:var(--green)">--</span></div>
-            <div class="val-row">Exit Target (R1): <span id="r1" style="color:var(--red)">--</span></div>
-            <div class="val-row">Stop Loss (Safe): <span id="sl" style="color:var(--red)">--</span></div>
+        <div class="card">
+            <h3 style="margin:0; font-size: 0.9rem;">Levels</h3>
+            <div style="display:flex; justify-content:space-around; margin-top:5px;">
+                <span>R: <strong id="r1" style="color:var(--red)">--</strong></span>
+                <span>S: <strong id="s1" style="color:var(--green)">--</strong></span>
+            </div>
         </div>
     </div>
 
@@ -78,17 +72,16 @@
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let currentID = 'bitcoin', s1_val = 0, r1_val = 0, price_val = 0;
+        let currentID = 'bitcoin', currentPrice = 0;
 
         async function getCoins() {
-            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50');
+            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=30');
             const data = await res.json();
             const sel = document.getElementById('coin-selector');
             data.forEach(c => {
                 let opt = document.createElement('option');
                 opt.value = c.id; opt.dataset.symbol = c.symbol.toUpperCase() + 'USDT';
-                opt.innerText = c.name + " ("+c.symbol.toUpperCase()+")"; 
-                if(c.id === 'bitcoin') opt.selected = true;
+                opt.innerText = c.name; if(c.id === 'bitcoin') opt.selected = true;
                 sel.appendChild(opt);
             });
             initUpdate();
@@ -97,66 +90,66 @@
         function initUpdate() {
             const sel = document.getElementById('coin-selector');
             const sym = sel.options[sel.selectedIndex].dataset.symbol;
-            const tf = document.getElementById('tf-selector').value;
             currentID = sel.value;
             document.getElementById('display-name').innerText = sel.options[sel.selectedIndex].text;
             
             new TradingView.widget({
-                "autosize": true, "symbol": "BINANCE:"+sym, "interval": tf,
-                "theme": "dark", "container_id": "tv-widget",
-                "drawings_access": {"type": "black", "tools": [{"name": "Trend Line"}]},
-                "allow_symbol_change": true, "toolbar_bg": "#1e2329"
+                "autosize": true, "symbol": "BINANCE:"+sym, "interval": document.getElementById('tf-selector').value,
+                "theme": "dark", "container_id": "tv-widget", "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"]
             });
             fetchData();
         }
 
         async function fetchData() {
             try {
-                // OHLC for Levels
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${currentID}/ohlc?vs_currency=usd&days=1`);
                 const ohlc = await res.json();
-                const last = ohlc[ohlc.length-1];
-                const pivot = (last[2]+last[3]+last[4])/3;
-                r1_val = (2*pivot)-last[3]; s1_val = (2*pivot)-last[2];
+                const last = ohlc[ohlc.length - 1]; // [time, open, high, low, close]
+                const open = last[1], high = last[2], low = last[3], close = last[4];
+                currentPrice = close;
 
-                // Simple Price & Change
-                const pRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd&include_24hr_change=true`);
-                const pData = await pRes.json();
-                price_val = pData[currentID].usd;
-                const change = pData[currentID].usd_24h_change;
+                document.getElementById('live-price').innerText = '$' + close.toLocaleString();
 
-                // Update UI
-                document.getElementById('live-price').innerText = '$'+price_val.toLocaleString();
-                document.getElementById('s1').innerText = s1_val.toFixed(2);
-                document.getElementById('r1').innerText = r1_val.toFixed(2);
-                document.getElementById('a-entry').innerText = price_val.toFixed(2);
-                document.getElementById('sl').innerText = (s1_val * 0.995).toFixed(2);
+                // 1. AI CANDLE DECODER LOGIC
+                let candleMsg = ""; let candleMove = "";
+                const bodySize = Math.abs(close - open);
+                const upperWick = high - Math.max(open, close);
+                const lowerWick = Math.min(open, close) - low;
 
-                // Sentiment Bar Logic
-                let buyP = 50 + (change / 2); // Simple math for simulation
-                buyP = Math.min(Math.max(buyP, 20), 80);
-                document.getElementById('buy-p').style.width = buyP + "%";
-                document.getElementById('sell-p').style.width = (100-buyP) + "%";
+                if (upperWick > bodySize * 2) {
+                    candleMsg = "Inverted Hammer / Shooting Star (Upper rejection detected).";
+                    candleMove = "Expect Bearish reversal or pullback.";
+                } else if (lowerWick > bodySize * 2) {
+                    candleMsg = "Hammer / Pin Bar (Strong lower support rejection).";
+                    candleMove = "Bullish momentum likely to follow.";
+                } else if (close > open && bodySize > (high-low)*0.7) {
+                    candleMsg = "Bullish Marubozu (Strong buying pressure).";
+                    candleMove = "Trend is strongly UP. Continue buying.";
+                } else {
+                    candleMsg = "Neutral Doji / Spinning Top (Market indecision).";
+                    candleMove = "Wait for the next candle to confirm direction.";
+                }
+                document.getElementById('candle-logic').innerText = candleMsg;
+                document.getElementById('candle-result').innerText = "Next Move: " + candleMove;
 
-                // Fear & Greed Simulation based on 24h Change
-                const fg = document.getElementById('fg-val');
-                if(change > 5) { fg.innerText = "EXTREME GREED"; fg.style.color = "var(--green)"; }
-                else if(change > 0) { fg.innerText = "GREED"; fg.style.color = "#a5d6a7"; }
-                else if(change > -5) { fg.innerText = "FEAR"; fg.style.color = "#ef9a9a"; }
-                else { fg.innerText = "EXTREME FEAR"; fg.style.color = "var(--red)"; }
+                // 2. AI INDICATOR DECODER (Simulated RSI/Trend)
+                const pivot = (high + low + close) / 3;
+                document.getElementById('r1').innerText = ((2*pivot)-low).toFixed(2);
+                document.getElementById('s1').innerText = ((2*pivot)-high).toFixed(2);
 
-                updateEducation(change);
+                let indMsg = ""; let indAdvice = "";
+                // Logic based on price position relative to Pivot
+                if (close > pivot) {
+                    indMsg = "Price is above Pivot. RSI showing positive momentum.";
+                    indAdvice = "Stay LONG until Resistance is hit.";
+                } else {
+                    indMsg = "Price is below Pivot. Bearish pressure increasing.";
+                    indAdvice = "Look for SHORT entries or wait for Support.";
+                }
+                document.getElementById('indicator-logic').innerText = indMsg;
+                document.getElementById('indicator-result').innerText = "Advice: " + indAdvice;
+
             } catch(e) { console.log("Updating..."); }
-        }
-
-        function updateEducation(change) {
-            const tips = [
-                "Advanced: Agar RSI 30 se niche hai aur 'Bullish Divergence' ban rahi hai, to entry confirm karein.",
-                "Scenario: Market is "+(change > 0 ? "BULLISH" : "BEARISH")+". Trendline breakout ka intezar karein.",
-                "Education: 'Morning Star' candlestick pattern hamesha support par talash karein.",
-                "Strategy: 200 EMA ke upar price ka matlab hai long-term Bull run."
-            ];
-            document.getElementById('edu-text').innerText = "Mehrab's Pro Insight: " + tips[Math.floor(Math.random()*tips.length)];
         }
 
         getCoins();
