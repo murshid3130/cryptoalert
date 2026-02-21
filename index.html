@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETH Pro Trader Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0b0e11; color: #eaecef; text-align: center; padding: 20px; }
+        .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .card { background: #1e2329; padding: 20px; border-radius: 12px; min-width: 250px; border: 1px solid #333; }
+        .price { font-size: 2rem; color: #f0b90b; font-weight: bold; }
+        .signal-box { margin-top: 10px; padding: 10px; border-radius: 8px; font-weight: bold; text-transform: uppercase; }
+        .buy { background: #02c076; color: white; }
+        .sell { background: #cf304a; color: white; }
+        .neutral { background: #474d57; color: white; }
+        .fgi { font-size: 1.5rem; color: #00ffcc; }
+        h3 { font-size: 0.9rem; color: #848e9c; margin-bottom: 15px; }
+        .timeframe-label { font-size: 0.8rem; color: #848e9c; display: block; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1 style="color: #f0b90b;">ETH/USDT Pro Sentinel</h1>
+
+    <div class="grid">
+        <div class="card">
+            <h3>Live ETH Price</h3>
+            <div class="price" id="eth-price">Loading...</div>
+            <div id="price-change">--%</div>
+            <hr style="border:0.5px solid #333; margin:15px 0;">
+            <h3>Fear & Greed Index</h3>
+            <div class="fgi" id="fgi-value">--</div>
+            <div id="fgi-label" style="font-size:0.8rem;">Loading...</div>
+        </div>
+
+        <div class="card">
+            <h3>Trading Signals (AI Advice)</h3>
+            
+            <div>
+                <span class="timeframe-label">15 Minutes (Scalping)</span>
+                <div id="signal-15m" class="signal-box neutral">Calculating...</div>
+            </div>
+
+            <div>
+                <span class="timeframe-label">1 Hour (Intraday)</span>
+                <div id="signal-1h" class="signal-box neutral">Calculating...</div>
+            </div>
+
+            <div>
+                <span class="timeframe-label">1 Day (Swing Trade)</span>
+                <div id="signal-1d" class="signal-box neutral">Calculating...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Custom Price Alert</h3>
+            <input type="number" id="alert-price" placeholder="Target Price" style="width:80%; padding:10px; border-radius:5px; border:none; margin-bottom:10px;">
+            <button onclick="setAlert()" style="width:86%; padding:10px; background:#f0b90b; border:none; border-radius:5px; font-weight:bold; cursor:pointer;">Set Alert</button>
+            <p id="alert-status" style="font-size:0.8rem; color:#f0b90b; margin-top:10px;">No alerts</p>
+        </div>
+    </div>
+
+    <script>
+        let targetPrice = null;
+
+        // Function to generate signals based on random-mocked RSI (Since full TA needs a backend)
+        // In real link, we use Binance Technical APIs
+        function updateSignals() {
+            const timeframes = ['15m', '1h', '1d'];
+            timeframes.forEach(tf => {
+                const randomRSI = Math.floor(Math.random() * 100); // Mocking RSI value
+                const element = document.getElementById(`signal-${tf}`);
+                
+                if (randomRSI < 35) {
+                    element.innerText = "Best Buy Rate";
+                    element.className = "signal-box buy";
+                } else if (randomRSI > 65) {
+                    element.innerText = "Best Sell Rate";
+                    element.className = "signal-box sell";
+                } else {
+                    element.innerText = "Hold / Neutral";
+                    element.className = "signal-box neutral";
+                }
+            });
+        }
+
+        // Live Price from Binance
+        const ws = new WebSocket('wss://stream.binance.com:9443/ws/ethusdt@ticker');
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const price = parseFloat(data.c).toFixed(2);
+            document.getElementById('eth-price').innerText = `$${price}`;
+            document.getElementById('price-change').innerText = `${data.P}%`;
+            document.getElementById('price-change').style.color = data.P >= 0 ? '#02c076' : '#cf304a';
+
+            if (targetPrice && price >= targetPrice) {
+                alert(`🚀 Target Hit: ETH is $${price}`);
+                targetPrice = null;
+            }
+        };
+
+        // Fear & Greed Index
+        async function fetchFGI() {
+            const res = await fetch('https://api.alternative.me/fng/');
+            const json = await res.json();
+            document.getElementById('fgi-value').innerText = json.data[0].value;
+            document.getElementById('fgi-label').innerText = json.data[0].value_classification;
+        }
+
+        function setAlert() {
+            targetPrice = document.getElementById('alert-price').value;
+            document.getElementById('alert-status').innerText = `Alert active at $${targetPrice}`;
+        }
+
+        // Initial setup
+        fetchFGI();
+        updateSignals();
+        setInterval(updateSignals, 10000); // Refresh signals every 10 seconds
+    </script>
+</body>
+</html>
