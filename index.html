@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mehrab AI - ETH Quantum Terminal</title>
+    <title>Mehrab AI - Quantum ETH Terminal</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
@@ -11,12 +11,10 @@
         .header-box { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-bottom: 10px; }
         .branding { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
 
-        /* Wallet & Market Volume Stats */
         .stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .stat-card { background: #2b3139; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #444; }
         .val { display: block; font-weight: bold; color: var(--gold); font-size: 1rem; }
 
-        /* Multi-TF Strategy Monitor */
         .strategy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
         .tf-box { background: var(--card); padding: 10px; border-radius: 8px; border: 1px solid #333; text-align: center; }
         .label { font-size: 0.7rem; color: #848e9c; display: block; margin-bottom: 4px; }
@@ -24,27 +22,25 @@
         .bullish { color: var(--green); }
         .bearish { color: var(--red); }
 
-        /* AI Guidance & Decoder */
         .ai-panel { background: #1c2127; padding: 10px; border-radius: 6px; border-left: 4px solid var(--gold); margin-bottom: 10px; }
         .decoder-text { color: #848e9c; font-size: 0.8rem; display: block; margin-top: 5px; }
 
-        #chart-container { height: 280px; border-radius: 8px; overflow: hidden; border: 1px solid #333; margin-bottom: 10px; }
+        #chart-container { height: 260px; border-radius: 8px; overflow: hidden; border: 1px solid #333; margin-bottom: 10px; }
         
-        /* History Logs Table */
         .history-box { background: #161a1e; border-radius: 8px; padding: 10px; border: 1px solid #444; height: 180px; overflow-y: auto; }
         table { width: 100%; text-align: left; border-collapse: collapse; font-size: 0.75rem; }
         th { color: #848e9c; border-bottom: 1px solid #333; padding-bottom: 5px; }
         td { padding: 6px 0; border-bottom: 1px solid #222; }
         .open-trade { background: rgba(240, 185, 11, 0.1); font-weight: bold; }
 
-        .btn-sync { width: 100%; padding: 8px; background: var(--gold); border: none; font-weight: bold; cursor: pointer; border-radius: 5px; margin-bottom: 10px; }
+        .btn-group { display: flex; gap: 5px; margin-bottom: 10px; }
+        .btn-sync { flex: 3; padding: 8px; background: var(--gold); border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        .btn-reset { flex: 1; padding: 8px; background: #333; color: white; border: none; cursor: pointer; border-radius: 5px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
-    <div class="header-box">
-        <h1 class="branding">Mehrab Ali - ETH Strategy Hub</h1>
-    </div>
+    <div class="header-box"><h1 class="branding">Mehrab Ali - ETH Strategy Hub</h1></div>
 
     <div class="stats-bar">
         <div class="stat-card"><span class="label">Balance</span><span id="balance" class="val">$10,000</span></div>
@@ -53,40 +49,44 @@
     </div>
 
     <div class="strategy-grid">
-        <div class="tf-box"><span class="label">H1 Trend</span><div id="h1-status" class="status">SCANNING</div></div>
-        <div class="tf-box"><span class="label">M5 Trend</span><div id="m5-status" class="status">SCANNING</div></div>
-        <div class="tf-box"><span class="label">Vol Filter</span><div id="vol-status" class="status">CHECKING</div></div>
+        <div class="tf-box"><span class="label">H1 Trend</span><div id="h1-status" class="status">--</div></div>
+        <div class="tf-box"><span class="label">M5 Trend</span><div id="m5-status" class="status">--</div></div>
+        <div class="tf-box"><span class="label">Vol Filter</span><div id="vol-status" class="status">--</div></div>
     </div>
 
     <div class="ai-panel">
-        <strong>MEHRAB AI Advice:</strong> <span id="ai-advice">Analyzing market alignment...</span>
-        <span id="candle-decoder" class="decoder-text">Decoder: Waiting for data...</span>
+        <strong>MEHRAB AI Advice:</strong> <span id="ai-advice">Syncing...</span>
+        <span id="candle-decoder" class="decoder-text">Decoder: Initializing...</span>
     </div>
 
-    <button class="btn-sync" onclick="updateMarketData()">🔄 Force Strategy Sync</button>
+    <div class="btn-group">
+        <button class="btn-sync" onclick="updateMarketData()">🔄 Sync Market</button>
+        <button class="btn-reset" onclick="resetHistory()">Reset All</button>
+    </div>
 
     <div id="chart-container"><div id="tv-widget" style="height: 100%;"></div></div>
 
     <div class="history-box">
-        <div style="color:var(--gold); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">📜 REAL-TIME TRADE LOGS</div>
+        <div style="color:var(--gold); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">📜 PERMANENT TRADE LOGS</div>
         <table>
-            <thead>
-                <tr><th>Side</th><th>Entry</th><th>Exit</th><th>Profit/Loss ($)</th></tr>
-            </thead>
-            <tbody id="history-body">
-                </tbody>
+            <thead><tr><th>Side</th><th>Entry</th><th>Exit</th><th>Profit/Loss ($)</th></tr></thead>
+            <tbody id="history-body"></tbody>
         </table>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let balance = 10000;
-        let totalPL = 0;
+        // Load Saved Data from LocalStorage
+        let balance = parseFloat(localStorage.getItem('m_balance')) || 10000;
+        let totalPL = parseFloat(localStorage.getItem('m_totalPL')) || 0;
+        let tradeHistory = JSON.parse(localStorage.getItem('m_history')) || [];
         let activeTrade = null;
         let ethPrice = 0;
-        const volumeThreshold = 500000000; // $500M Threshold for faster trades
 
-        // Initialize ETH Chart
+        // Initialize UI
+        updateStatsUI();
+        renderHistory();
+
         new TradingView.widget({
             "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "5",
             "theme": "dark", "container_id": "tv-widget"
@@ -94,8 +94,7 @@
 
         async function updateMarketData() {
             try {
-                // Fetch ETH Market Data
-                const res = await fetch(`https://api.coingecko.com/api/v3/coins/ethereum?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+                const res = await fetch(`https://api.coingecko.com/api/v3/coins/ethereum?localization=false&market_data=true`);
                 const data = await res.json();
                 
                 ethPrice = data.market_data.current_price.usd;
@@ -105,98 +104,103 @@
 
                 document.getElementById('vol-24h').innerText = '$' + (vol24/1e9).toFixed(1) + 'B';
 
-                // 1. Trend Analysis (H1 & M5)
                 const h1Trend = change24h > 0 ? "BULLISH" : "BEARISH";
                 const m5Trend = change1h > 0 ? "BULLISH" : "BEARISH";
-                const volHigh = vol24 > volumeThreshold;
+                const volHigh = vol24 > 500000000;
 
-                // Update UI Status
-                updateUI('h1-status', h1Trend);
-                updateUI('m5-status', m5Trend);
+                updateStatusUI('h1-status', h1Trend);
+                updateStatusUI('m5-status', m5Trend);
                 document.getElementById('vol-status').innerText = volHigh ? "HIGH" : "LOW";
                 document.getElementById('vol-status').className = "status " + (volHigh ? "bullish" : "bearish");
 
-                // 2. Asaan Decoder
-                let mood = (h1Trend === m5Trend) ? `Dono timeframes ${h1Trend} hain. Market aik hi raste par hai.` : "Timeframes match nahi ho rahe, market confuse hai.";
-                document.getElementById('candle-decoder').innerText = "Decoder: " + mood;
-
-                // 3. Trade Execution Logic
                 const advice = document.getElementById('ai-advice');
-                
                 if (activeTrade) {
-                    advice.innerText = `TRADE ACTIVE: Monitoring ${activeTrade.type} position...`;
+                    advice.innerText = `ACTIVE: Monitoring ${activeTrade.type}...`;
                     checkExit();
                 } else {
                     if (h1Trend === m5Trend && volHigh) {
-                        advice.innerText = `STRATEGY MATCH: Executing ${h1Trend} Order!`;
+                        advice.innerText = `MATCH: Executing ${h1Trend} Order!`;
                         executeTrade(h1Trend === "BULLISH" ? "BUY" : "SELL");
                     } else {
-                        let reason = (h1Trend !== m5Trend) ? "Trends Not Aligned" : "Volume Too Low";
-                        advice.innerText = "WAIT: " + reason;
+                        advice.innerText = "WAIT: Looking for Alignment + Volume";
                     }
                 }
+                document.getElementById('candle-decoder').innerText = "Decoder: " + (h1Trend === m5Trend ? "Strong trend detected." : "Market indecision.");
 
-            } catch(e) { console.log("Data Fetch Error. Retrying..."); }
-        }
-
-        function updateUI(id, trend) {
-            const el = document.getElementById(id);
-            el.innerText = trend;
-            el.className = "status " + (trend === "BULLISH" ? "bullish" : "bearish");
+            } catch(e) { console.log("Data error..."); }
         }
 
         function executeTrade(type) {
             if (activeTrade) return;
-
             activeTrade = { type: type, entry: ethPrice, amount: 2000 };
             
-            // Play Sound (Optional)
-            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
-            audio.play().catch(()=>{});
-
-            // Add to Table Fauran as OPEN
-            const row = `<tr id="active-row" class="open-trade">
-                <td class="${type==='BUY'?'bullish':'bearish'}">${type} (OPEN)</td>
-                <td>$${ethPrice.toFixed(2)}</td>
-                <td>--</td>
-                <td>Monitoring...</td>
-            </tr>`;
+            // Temporary row for active trade
+            const row = `<tr id="active-row" class="open-trade"><td class="${type==='BUY'?'bullish':'bearish'}">${type} (OPEN)</td><td>$${ethPrice.toFixed(2)}</td><td>--</td><td>Monitoring...</td></tr>`;
             document.getElementById('history-body').insertAdjacentHTML('afterbegin', row);
         }
 
         function checkExit() {
-            if (!activeTrade) return;
-
             let pnlPercent = ((ethPrice - activeTrade.entry) / activeTrade.entry) * 100;
             if (activeTrade.type === 'SELL') pnlPercent = -pnlPercent;
 
-            // TP: 0.8% | SL: 0.4%
             if (pnlPercent >= 0.8 || pnlPercent <= -0.4) {
                 const profitVal = (activeTrade.amount * pnlPercent) / 100;
                 balance += profitVal;
                 totalPL += profitVal;
 
-                // Update Wallet UI
-                document.getElementById('balance').innerText = `$${balance.toFixed(0)}`;
-                document.getElementById('total-pl').innerText = (profitVal >= 0 ? '+' : '') + `$${totalPL.toFixed(2)}`;
-                document.getElementById('total-pl').style.color = totalPL >= 0 ? 'var(--green)' : 'var(--red)';
+                // Save to history array
+                const newLog = {
+                    type: activeTrade.type,
+                    entry: activeTrade.entry,
+                    exit: ethPrice,
+                    pnl: profitVal
+                };
+                tradeHistory.unshift(newLog);
+                if(tradeHistory.length > 20) tradeHistory.pop();
 
-                // Update Table Row
-                const finalRow = `<tr>
-                    <td class="${activeTrade.type==='BUY'?'bullish':'bearish'}">${activeTrade.type}</td>
-                    <td>$${activeTrade.entry.toFixed(2)}</td>
-                    <td>$${ethPrice.toFixed(2)}</td>
-                    <td class="${profitVal>=0?'bullish':'bearish'}">${profitVal>=0?'+':''}${profitVal.toFixed(2)}</td>
-                </tr>`;
-                
-                document.getElementById('history-body').deleteRow(0);
-                document.getElementById('history-body').insertAdjacentHTML('afterbegin', finalRow);
-                
+                // Save to LocalStorage
+                localStorage.setItem('m_balance', balance);
+                localStorage.setItem('m_totalPL', totalPL);
+                localStorage.setItem('m_history', JSON.stringify(tradeHistory));
+
+                updateStatsUI();
+                renderHistory();
                 activeTrade = null;
             }
         }
 
-        setInterval(updateMarketData, 20000); // 20 Seconds Refresh
+        function updateStatsUI() {
+            document.getElementById('balance').innerText = `$${balance.toFixed(0)}`;
+            document.getElementById('total-pl').innerText = (totalPL >= 0 ? '+' : '') + `$${totalPL.toFixed(2)}`;
+            document.getElementById('total-pl').style.color = totalPL >= 0 ? 'var(--green)' : 'var(--red)';
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = tradeHistory.map(t => `
+                <tr>
+                    <td class="${t.type==='BUY'?'bullish':'bearish'}">${t.type}</td>
+                    <td>$${t.entry.toFixed(2)}</td>
+                    <td>$${t.exit.toFixed(2)}</td>
+                    <td class="${t.pnl>=0?'bullish':'bearish'}">${t.pnl>=0?'+':''}${t.pnl.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStatusUI(id, trend) {
+            const el = document.getElementById(id);
+            el.innerText = trend;
+            el.className = "status " + (trend === "BULLISH" ? "bullish" : "bearish");
+        }
+
+        function resetHistory() {
+            if(confirm("Reset all trading data?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        setInterval(updateMarketData, 20000);
         updateMarketData();
     </script>
 </body>
