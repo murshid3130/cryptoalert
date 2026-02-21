@@ -3,46 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mentor Terminal - Murshid3130</title>
+    <title>AI Crypto Advisor - Developed by Mehrab Ali</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; overflow-x: hidden; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #333; position: relative; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         
-        /* Knowledge Stream Bar */
-        .knowledge-stream { background: linear-gradient(90deg, #1e2329, #2b3139); border-top: 2px solid var(--gold); padding: 15px; border-radius: 8px; margin-bottom: 15px; position: relative; overflow: hidden; }
-        .knowledge-label { color: var(--gold); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; font-weight: bold; }
-        #ai-mentor-text { font-size: 1.1rem; line-height: 1.5; font-style: italic; transition: opacity 0.5s ease-in-out; }
+        /* Header & Footer Branding */
+        .branding { text-align: center; color: var(--gold); font-weight: bold; margin-bottom: 10px; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
+        footer { text-align: center; margin-top: 20px; padding: 10px; color: #848e9c; font-size: 0.9rem; border-top: 1px solid #333; }
 
-        .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
-        select, input { background: #2b3139; color: white; border: 1px solid #474d57; padding: 10px; border-radius: 6px; }
-        button { background: var(--gold); color: black; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        
-        .price-val { font-size: 2.2rem; color: var(--gold); font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #333; }
+        .knowledge-stream { background: #2b3139; border-top: 3px solid var(--gold); padding: 15px; border-radius: 8px; margin-bottom: 15px; font-style: italic; color: var(--gold); min-height: 40px; }
+        .price-val { font-size: 2.5rem; color: var(--gold); font-weight: bold; }
         .advisor-box { padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 5px solid; font-weight: bold; }
         .buy-zone { border-color: var(--green); background: rgba(2, 192, 118, 0.1); color: var(--green); }
         .sell-zone { border-color: var(--red); background: rgba(207, 48, 74, 0.1); color: var(--red); }
-        
-        .level-box { text-align: center; background: #2b3139; padding: 10px; border-radius: 8px; }
-        #chart-container { height: 550px; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+        .level-box { text-align: center; background: #2b3139; padding: 10px; border-radius: 8px; flex: 1; }
+        #chart-container { height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid #333; }
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
+        select, input, button { padding: 10px; border-radius: 6px; border: none; background: #2b3139; color: white; outline: none; }
+        button { background: var(--gold); color: black; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="knowledge-stream">
-        <div class="knowledge-label">● AI Mentor Deep Knowledge Stream</div>
-        <div id="ai-mentor-text">Initializing AI Education database...</div>
-    </div>
+    <div class="branding">Mehrab Ali - AI Trading Terminal</div>
+    <div class="knowledge-stream" id="mentor-text">AI Mentor: Deep Knowledge Stream Initializing...</div>
 
     <div class="controls">
         <select id="coin-selector" onchange="initUpdate()"></select>
         <select id="tf-selector" onchange="initUpdate()">
             <option value="15">15m (Scalp)</option>
-            <option value="60" selected>1h (Swing)</option>
+            <option value="60" selected>1h (Trade)</option>
             <option value="D">1D (Invest)</option>
         </select>
-        <input type="number" id="alert-price" placeholder="Target Price">
+        <input type="number" id="alert-price" placeholder="Alert Price">
         <button onclick="setAlert()">Set Alert</button>
     </div>
 
@@ -50,130 +46,117 @@
         <div class="card">
             <h3 id="display-name">Loading...</h3>
             <div class="price-val" id="live-price">$0.00</div>
-            <div id="ai-advice" class="advisor-box">Analyzing market...</div>
+            <div id="ai-advice" class="advisor-box">Analyzing Market Dynamics...</div>
         </div>
 
         <div class="card">
-            <h3 style="color: var(--gold);">Technical Levels</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div class="level-box"><small style="color:var(--red)">Resistance</small><br><strong id="r1">--</strong></div>
-                <div class="level-box"><small style="color:var(--green)">Support</small><br><strong id="s1">--</strong></div>
+            <h3>Support & Resistance (24h)</h3>
+            <div style="display: flex; gap: 10px;">
+                <div class="level-box"><small style="color:var(--red)">Resistance (Sell)</small><br><strong id="r1">--</strong></div>
+                <div class="level-box"><small style="color:var(--green)">Support (Buy)</small><br><strong id="s1">--</strong></div>
             </div>
-            <p id="trend-desc" style="font-size: 0.8rem; margin-top: 10px; color:#848e9c;"></p>
+            <p style="font-size: 0.8rem; color: #848e9c; margin-top: 10px; text-align: center;">Technical Guidance by Mehrab's AI Engine</p>
         </div>
     </div>
 
-    <div id="chart-container">
-        <div id="tv-widget" style="height: 100%;"></div>
-    </div>
+    <div id="chart-container"><div id="tv-widget" style="height: 100%;"></div></div>
+
+    <footer>
+        Developed with ❤️ by <strong>Mehrab Ali</strong> | Data Powered by Binance & CoinGecko
+    </footer>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        const mentorKnowledge = [
-            "Candlestick Insight: Doji candle means market indecision. Wait for the next candle to confirm trend reversal.",
-            "Indicator Tip: RSI above 70 means Overbought. Don't chase the pump, wait for a cooldown.",
-            "Support/Resistance: S1 is not just a line, it's a 'Buying Zone'. Look for volume spikes near S1.",
-            "MACD Secret: When MACD line crosses above Signal line, it's often a momentum shift for a Bull run.",
-            "Risk Management: Never risk more than 1-2% of your total capital on a single trade.",
-            "Pattern Alert: A 'Double Bottom' (W shape) near Support 2 is one of the strongest Buy signals.",
-            "Psychology: The market is a device for transferring money from the impatient to the patient.",
-            "EMA Strategy: If price is above 200 EMA, the long-term trend is Bullish. Buy the dips.",
-            "Volume Truth: Price rising with low volume is a trap. Real trends need high trading volume.",
-            "Fibonacci Tool: The 0.618 level is the 'Golden Pocket'. Expect strong bounces from this area."
+        const tips = [
+            "Mehrab's Tip: Look for RSI divergence for trend reversals.",
+            "Candlestick Secret: A Hammer at Support is a powerful Buy sign.",
+            "Risk Tip: Never risk more than 2% of your wallet on one trade.",
+            "EMA Insight: Price above 200 EMA means the trend is Bullish.",
+            "Volume Rule: High volume breakout confirms the move is real.",
+            "Mehrab's Tip: Don't trade in a sideways market, wait for the break."
         ];
-
-        let currentID = 'ethereum';
-        let currentSymbol = 'ETHUSDT';
-        let alerts = [];
-
-        function updateMentor() {
-            const text = mentorKnowledge[Math.floor(Math.random() * mentorKnowledge.length)];
-            const el = document.getElementById('ai-mentor-text');
-            el.style.opacity = 0;
-            setTimeout(() => {
-                el.innerText = text;
-                el.style.opacity = 1;
-            }, 500);
-        }
+        
+        let currentID = 'ethereum', currentSymbol = 'ETHUSDT';
 
         async function getCoins() {
-            const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=150&page=1');
-            const data = await res.json();
-            const sel = document.getElementById('coin-selector');
-            data.forEach(c => {
-                let opt = document.createElement('option');
-                opt.value = c.id;
-                opt.dataset.symbol = c.symbol.toUpperCase() + 'USDT';
-                opt.innerText = `${c.name} (${c.symbol.toUpperCase()})`;
-                if(c.id === 'ethereum') opt.selected = true;
-                sel.appendChild(opt);
-            });
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100');
+                const data = await res.json();
+                const sel = document.getElementById('coin-selector');
+                data.forEach(c => {
+                    let opt = document.createElement('option');
+                    opt.value = c.id; opt.dataset.symbol = c.symbol.toUpperCase() + 'USDT';
+                    opt.innerText = c.name + " (" + c.symbol.toUpperCase() + ")"; 
+                    if(c.id === 'ethereum') opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            } catch(e) { console.log("API Error"); }
         }
 
         function initUpdate() {
             const sel = document.getElementById('coin-selector');
             const tf = document.getElementById('tf-selector').value;
-            currentID = sel.value;
+            currentID = sel.value; 
             currentSymbol = sel.options[sel.selectedIndex].dataset.symbol;
             document.getElementById('display-name').innerText = sel.options[sel.selectedIndex].text;
-            loadChart(currentSymbol, tf);
-            fetchTechnicalData();
-        }
-
-        function loadChart(sym, tf) {
-            new TradingView.widget({
-                "autosize": true, "symbol": "BINANCE:"+sym, "interval": tf,
-                "timezone": "Etc/UTC", "theme": "dark", "style": "1",
-                "container_id": "tv-widget", "allow_symbol_change": true
+            
+            new TradingView.widget({ 
+                "autosize": true, 
+                "symbol": "BINANCE:"+currentSymbol, 
+                "interval": tf, 
+                "theme": "dark", 
+                "style": "1",
+                "container_id": "tv-widget",
+                "hide_side_toolbar": false,
+                "allow_symbol_change": true
             });
+            fetchData();
         }
 
-        async function fetchTechnicalData() {
+        async function fetchData() {
             try {
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/${currentID}/ohlc?vs_currency=usd&days=1`);
                 const ohlc = await res.json();
-                const last = ohlc[ohlc.length - 1];
-                const [time, open, high, low, close] = last;
+                const last = ohlc[ohlc.length-1];
+                const pivot = (last[2]+last[3]+last[4])/3, r1 = (2*pivot)-last[3], s1 = (2*pivot)-last[2];
                 
-                const pivot = (high + low + close) / 3;
-                const r1 = (2 * pivot) - low;
-                const s1 = (2 * pivot) - high;
-
-                document.getElementById('r1').innerText = `$${r1.toFixed(2)}`;
-                document.getElementById('s1').innerText = `$${s1.toFixed(2)}`;
-
-                const pRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd&include_24hr_change=true`);
+                document.getElementById('r1').innerText = '$' + r1.toFixed(2);
+                document.getElementById('s1').innerText = '$' + s1.toFixed(2);
+                
+                const pRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${currentID}&vs_currencies=usd`);
                 const pData = await pRes.json();
                 const price = pData[currentID].usd;
                 
-                document.getElementById('live-price').innerText = `$${price.toLocaleString()}`;
+                document.getElementById('live-price').innerText = '$' + price.toLocaleString();
                 
                 const adv = document.getElementById('ai-advice');
-                if (price <= s1) {
-                    adv.className = "advisor-box buy-zone";
-                    adv.innerHTML = `SIGNAL: BUY ZONE<br>Price near S1 ($${s1.toFixed(2)}). Good for entry.`;
-                } else if (price >= r1) {
-                    adv.className = "advisor-box sell-zone";
-                    adv.innerHTML = `SIGNAL: SELL ZONE<br>Resistance reached ($${r1.toFixed(2)}). Take profit.`;
-                } else {
-                    adv.className = "advisor-box";
-                    adv.style.background = "#2b3139";
-                    adv.innerHTML = `SIGNAL: NEUTRAL<br>Wait for S1 ($${s1.toFixed(2)}) or R1 ($${r1.toFixed(2)}).`;
+                if(price <= s1) { 
+                    adv.className="advisor-box buy-zone"; 
+                    adv.innerHTML="MEHRAB AI: STRONG BUY<br>Price is at Support Zone."; 
                 }
-            } catch (e) { console.error("API Limit reached. Wait 30s."); }
+                else if(price >= r1) { 
+                    adv.className="advisor-box sell-zone"; 
+                    adv.innerHTML="MEHRAB AI: TAKE PROFIT / SELL<br>Price hit Resistance Zone."; 
+                }
+                else { 
+                    adv.className="advisor-box"; 
+                    adv.style.background = "#2b3139";
+                    adv.innerHTML="MEHRAB AI: NEUTRAL<br>Wait for Support ($"+s1.toFixed(2)+")"; 
+                }
+            } catch (e) { console.log("Syncing..."); }
         }
 
         function setAlert() {
             const val = document.getElementById('alert-price').value;
-            if(val) { alerts.push(parseFloat(val)); alert("Target Alert Set!"); }
+            if(val) alert("Alert set at $" + val);
         }
 
-        getCoins().then(() => {
-            initUpdate();
-            updateMentor();
-            setInterval(updateMentor, 60000); // Har 1 minute baad naya tip
-            setInterval(fetchTechnicalData, 30000);
-        });
+        setInterval(() => { 
+            document.getElementById('mentor-text').innerText = tips[Math.floor(Math.random()*tips.length)]; 
+        }, 30000);
+
+        getCoins().then(initUpdate); 
+        setInterval(fetchData, 30000);
     </script>
 </body>
 </html>
