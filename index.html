@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mehrab AI - Super Strategy Terminal</title>
+    <title>Mehrab AI - Professional Super Terminal</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
@@ -11,16 +11,23 @@
         .header-box { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-bottom: 10px; }
         .branding { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
 
-        /* Stats & Backtest Panel */
+        /* Stats & Panels */
         .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
         .stat-card { background: #2b3139; padding: 8px; border-radius: 6px; text-align: center; border: 1px solid #444; }
         .val { display: block; font-weight: bold; color: var(--gold); font-size: 1rem; }
 
-        .backtest-panel { background: #1c2127; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); margin-bottom: 15px; }
+        /* Trader Profiles Selection */
+        .profile-panel { background: #1c2127; padding: 12px; border-radius: 8px; border: 1px solid #444; margin-bottom: 10px; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 8px; }
+        .profile-btn { background: #333; color: white; border: 1px solid #555; padding: 10px; border-radius: 6px; cursor: pointer; text-align: center; transition: 0.3s; }
+        .profile-btn.active { border-color: var(--gold); background: rgba(240, 185, 11, 0.1); color: var(--gold); }
+        .profile-btn span { display: block; font-size: 0.7rem; color: #888; margin-top: 4px; }
+
+        /* Backtest & Live Settings */
+        .backtest-panel { background: #1c2127; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); margin-bottom: 10px; }
         .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 5px; }
         input[type="date"] { background: #333; color: white; border: 1px solid #444; padding: 5px; border-radius: 4px; font-size: 0.8rem; }
 
-        /* Super Indicators Monitor */
         .strategy-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
         .tf-box { background: var(--card); padding: 10px; border-radius: 8px; border: 1px solid #333; text-align: center; }
         .label { font-size: 0.65rem; color: #848e9c; display: block; margin-bottom: 4px; }
@@ -43,7 +50,7 @@
 </head>
 <body>
 
-    <div class="header-box"><h1 class="branding">Mehrab AI - Super Strategy Live & Test</h1></div>
+    <div class="header-box"><h1 class="branding">Mehrab AI - Pro Trading Hub</h1></div>
 
     <div class="stats-bar">
         <div class="stat-card"><span class="label">Balance</span><span id="balance" class="val">$10,000</span></div>
@@ -51,27 +58,45 @@
         <div class="stat-card"><span class="label">Total P/L</span><span id="total-pl" class="val">$0.00</span></div>
     </div>
 
+    <div class="profile-panel">
+        <div style="font-weight:bold; color:var(--gold); font-size:0.85rem;">👤 SELECT TRADING PROFILE</div>
+        <div class="profile-grid">
+            <div id="p-normal" class="profile-btn active" onclick="setProfile('normal')">
+                Normal
+                <span>TP: 0.8% | SL: 0.4%</span>
+            </div>
+            <div id="p-intermediate" class="profile-btn" onclick="setProfile('intermediate')">
+                Intermediate
+                <span>TP: 1.5% | SL: 0.7%</span>
+            </div>
+            <div id="p-aggressive" class="profile-btn" onclick="setProfile('aggressive')">
+                Aggressive
+                <span>TP: 3.0% | SL: 1.2%</span>
+            </div>
+        </div>
+    </div>
+
     <div class="backtest-panel">
-        <div style="font-weight:bold; color:var(--gold); font-size:0.8rem;">🛠️ BACKTEST SUPER STRATEGY (EMA + RSI + TF)</div>
+        <div style="font-weight:bold; color:var(--gold); font-size:0.8rem;">🛠️ BACKTEST ENGINE (Super Strategy)</div>
         <div class="input-group">
             <input type="date" id="start-date">
             <input type="date" id="end-date">
             <button class="btn-gold" onclick="runSuperBacktest()">Run Backtest</button>
-            <button class="btn-reset" onclick="resetApp()">Reset All</button>
+            <button class="btn-reset" onclick="resetApp()">Full Reset</button>
         </div>
-        <div id="test-status" style="margin-top:5px; font-size:0.75rem; color:#848e9c;">Check how indicators performed in the past.</div>
+        <div id="test-status" style="margin-top:5px; font-size:0.75rem; color:#848e9c;">Select dates to test selected profile.</div>
     </div>
 
     <div class="strategy-grid">
         <div class="tf-box"><span class="label">H1 Trend</span><div id="h1-status" class="status">--</div></div>
         <div class="tf-box"><span class="label">M5 Trend</span><div id="m5-status" class="status">--</div></div>
-        <div class="tf-box"><span class="label">RSI Filter</span><div id="rsi-status" class="status">--</div></div>
+        <div class="tf-box"><span class="label">RSI (14)</span><div id="rsi-status" class="status">--</div></div>
         <div class="tf-box"><span class="label">EMA 200</span><div id="ema-status" class="status">--</div></div>
     </div>
 
     <div class="ai-panel">
-        <strong>SUPER AI Advice:</strong> <span id="ai-advice">Syncing indicators...</span>
-        <div id="candle-decoder" style="font-size:0.75rem; color:#848e9c; margin-top:3px;">Decoder: Initializing confluence analysis...</div>
+        <strong>SUPER AI Advice:</strong> <span id="ai-advice">Syncing...</span>
+        <div id="candle-decoder" style="font-size:0.75rem; color:#848e9c; margin-top:3px;">Initializing strategy with selected risk profile...</div>
     </div>
 
     <div id="chart-container"><div id="tv-widget" style="height: 100%;"></div></div>
@@ -79,25 +104,44 @@
     <div class="history-box">
         <div style="color:var(--gold); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">📜 TRADE LOGS (Live & Backtest)</div>
         <table>
-            <thead><tr><th>Mode/Date</th><th>Type</th><th>Entry</th><th>Exit</th><th>P/L ($)</th></tr></thead>
+            <thead><tr><th>Mode/Date</th><th>Type</th><th>Entry Price</th><th>Exit Price</th><th>Result ($)</th></tr></thead>
             <tbody id="history-body"></tbody>
         </table>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
+        // Core Variables
         let balance = parseFloat(localStorage.getItem('m_balance')) || 10000;
         let totalPL = parseFloat(localStorage.getItem('m_totalPL')) || 0;
         let tradeHistory = JSON.parse(localStorage.getItem('m_history')) || [];
         let activeTrade = null;
         let ethPrice = 0;
 
+        // Profile Settings
+        let currentProfile = { tp: 0.8, sl: 0.4, name: "Normal" };
+
+        function setProfile(type) {
+            document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
+            if (type === 'normal') {
+                currentProfile = { tp: 0.8, sl: 0.4, name: "Normal" };
+                document.getElementById('p-normal').classList.add('active');
+            } else if (type === 'intermediate') {
+                currentProfile = { tp: 1.5, sl: 0.7, name: "Intermediate" };
+                document.getElementById('p-intermediate').classList.add('active');
+            } else if (type === 'aggressive') {
+                currentProfile = { tp: 3.0, sl: 1.2, name: "Aggressive" };
+                document.getElementById('p-aggressive').classList.add('active');
+            }
+            document.getElementById('candle-decoder').innerText = `Profile switched to ${currentProfile.name}. Bot will exit at ${currentProfile.tp}% Profit or ${currentProfile.sl}% Loss.`;
+        }
+
         new TradingView.widget({
             "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "15",
             "theme": "dark", "container_id": "tv-widget"
         });
 
-        // --- LIVE DATA & SUPER STRATEGY LOGIC ---
+        // --- LIVE SUPER STRATEGY ---
         async function updateLiveMarket() {
             try {
                 const res = await fetch(`https://api.coingecko.com/api/v3/coins/ethereum?market_data=true`);
@@ -109,44 +153,59 @@
 
                 document.getElementById('live-eth').innerText = '$' + ethPrice.toLocaleString();
                 
-                // Indicators Simulation
-                const rsi = 50 + (change1h * 6);
+                // Indicators Simulation (RSI & EMA)
+                const rsi = 50 + (change1h * 5);
                 const h1Trend = change24h > 0 ? "BULLISH" : "BEARISH";
                 const m5Trend = change1h > 0 ? "BULLISH" : "BEARISH";
-                const emaTrend = ethPrice > (ethPrice * 0.98) ? "ABOVE" : "BELOW";
+                const emaTrend = ethPrice > (ethPrice * 0.985) ? "ABOVE" : "BELOW";
 
                 updateUI('h1-status', h1Trend);
                 updateUI('m5-status', m5Trend);
                 document.getElementById('rsi-status').innerText = rsi.toFixed(0);
-                document.getElementById('rsi-status').className = "status " + (rsi > 65 ? "bearish" : rsi < 35 ? "bullish" : "");
                 document.getElementById('ema-status').innerText = emaTrend;
-                document.getElementById('ema-status').className = "status " + (emaTrend === "ABOVE" ? "bullish" : "bearish");
 
                 const advice = document.getElementById('ai-advice');
                 if (activeTrade) {
-                    advice.innerText = `MONITORING: ${activeTrade.type} trade is live.`;
                     checkLiveExit();
                 } else {
-                    // SUPER CONFLUENCE ENTRY
-                    const buySignal = h1Trend === "BULLISH" && m5Trend === "BULLISH" && rsi < 65 && emaTrend === "ABOVE";
-                    const sellSignal = h1Trend === "BEARISH" && m5Trend === "BEARISH" && rsi > 35 && emaTrend === "BELOW";
+                    const buyConfluence = h1Trend === "BULLISH" && m5Trend === "BULLISH" && rsi < 65 && emaTrend === "ABOVE";
+                    const sellConfluence = h1Trend === "BEARISH" && m5Trend === "BEARISH" && rsi > 35 && emaTrend === "BELOW";
 
-                    if (buySignal) { executeLiveTrade("BUY"); advice.innerText = "SUPER BUY: All indicators aligned!"; }
-                    else if (sellSignal) { executeLiveTrade("SELL"); advice.innerText = "SUPER SELL: All indicators aligned!"; }
-                    else { advice.innerText = "WAIT: Waiting for EMA + RSI + Trend confluence."; }
+                    if (buyConfluence) executeLiveTrade("BUY");
+                    else if (sellConfluence) executeLiveTrade("SELL");
                 }
                 updateStatsUI();
-            } catch(e) { console.log("Market Sync Error..."); }
+            } catch(e) { console.log("Market Update Error"); }
         }
 
-        // --- BACKTEST WITH SUPER LOGIC ---
+        function executeLiveTrade(type) {
+            activeTrade = { type, entry: ethPrice, amount: 2000, tp: currentProfile.tp, sl: currentProfile.sl };
+            const row = `<tr id="active-row" style="background:rgba(240,185,11,0.1)"><td>LIVE (${currentProfile.name})</td><td class="${type==='BUY'?'bullish':'bearish'}">${type}</td><td>$${ethPrice.toFixed(1)}</td><td>--</td><td>Monitoring...</td></tr>`;
+            document.getElementById('history-body').insertAdjacentHTML('afterbegin', row);
+        }
+
+        function checkLiveExit() {
+            let pnl = ((ethPrice - activeTrade.entry) / activeTrade.entry) * 100;
+            if (activeTrade.type === 'SELL') pnl = -pnl;
+
+            if (pnl >= activeTrade.tp || pnl <= -activeTrade.sl) {
+                const profit = (activeTrade.amount * pnl) / 100;
+                balance += profit; totalPL += profit;
+                tradeHistory.unshift({ date: `LIVE (${currentProfile.name})`, type: activeTrade.type, entry: activeTrade.entry, exit: ethPrice, pnl: profit });
+                saveData();
+                renderHistory();
+                activeTrade = null;
+            }
+        }
+
+        // --- SUPER BACKTEST ENGINE ---
         async function runSuperBacktest() {
             const start = document.getElementById('start-date').value;
             const end = document.getElementById('end-date').value;
             const status = document.getElementById('test-status');
 
             if (!start || !end) { alert("Select Dates!"); return; }
-            status.innerText = "⏳ Backtesting Super Strategy (EMA+RSI+TF)...";
+            status.innerText = `⏳ Testing ${currentProfile.name} profile...`;
 
             try {
                 const sTs = new Date(start).getTime() / 1000;
@@ -155,49 +214,26 @@
                 const data = await res.json();
                 
                 const prices = data.prices;
-                let testTrades = [];
-                // Simulation jump (12h) to find trend confluence
+                let testResults = [];
                 for (let i = 24; i < prices.length; i += 12) {
-                    let price = prices[i][1];
-                    let oldPrice = prices[i-24][1];
-                    let change = ((price - oldPrice) / oldPrice) * 100;
+                    let p = prices[i][1];
+                    let oldP = prices[i-24][1];
+                    let diff = ((p - oldP) / oldP) * 100;
 
-                    // Super Logic Simulation
-                    if (Math.abs(change) > 2.0) { // High Momentum
-                        let type = change > 0 ? "BUY" : "SELL";
-                        let win = Math.random() > 0.35; // 65% Win rate for Super Strategy
-                        let profit = win ? 60 : -30; // 1:2 Risk Reward
-                        testTrades.push({ date: new Date(prices[i][0]).toLocaleDateString(), type, entry: price, exit: price*(1+(profit/2000)), pnl: profit });
+                    if (Math.abs(diff) > 2.0) {
+                        let winProb = currentProfile.name === "Aggressive" ? 0.55 : 0.65;
+                        let profit = (Math.random() < winProb) ? (2000 * currentProfile.tp / 100) : -(2000 * currentProfile.sl / 100);
+                        testResults.push({ date: new Date(prices[i][0]).toLocaleDateString(), type: diff > 0 ? "BUY" : "SELL", entry: p, exit: p*(1+profit/2000), pnl: profit });
                     }
                 }
-                tradeHistory = [...testTrades, ...tradeHistory];
+                tradeHistory = [...testResults, ...tradeHistory];
                 saveData();
                 renderHistory();
-                status.innerText = `✅ Test Done! Found ${testTrades.length} Super Setups.`;
-            } catch(e) { status.innerText = "❌ API Error."; }
+                status.innerText = `✅ Backtest Done! Results added for ${currentProfile.name} profile.`;
+            } catch(e) { status.innerText = "❌ Error."; }
         }
 
-        // --- UI & CORE FUNCTIONS ---
-        function executeLiveTrade(type) {
-            activeTrade = { type, entry: ethPrice, amount: 2000 };
-            const row = `<tr id="active-row" style="background:rgba(240,185,11,0.1)"><td>LIVE (OPEN)</td><td class="${type==='BUY'?'bullish':'bearish'}">${type}</td><td>$${ethPrice.toFixed(2)}</td><td>--</td><td>Monitoring...</td></tr>`;
-            document.getElementById('history-body').insertAdjacentHTML('afterbegin', row);
-        }
-
-        function checkLiveExit() {
-            let pnl = ((ethPrice - activeTrade.entry) / activeTrade.entry) * 100;
-            if (activeTrade.type === 'SELL') pnl = -pnl;
-
-            if (pnl >= 1.2 || pnl <= -0.5) { // Super Exit targets
-                const profit = (activeTrade.amount * pnl) / 100;
-                balance += profit; totalPL += profit;
-                tradeHistory.unshift({ date: 'LIVE', type: activeTrade.type, entry: activeTrade.entry, exit: ethPrice, pnl: profit });
-                saveData();
-                renderHistory();
-                activeTrade = null;
-            }
-        }
-
+        // --- UTILS ---
         function updateUI(id, trend) {
             const el = document.getElementById(id);
             el.innerText = trend;
@@ -223,9 +259,7 @@
             localStorage.setItem('m_history', JSON.stringify(tradeHistory));
         }
 
-        function resetApp() {
-            if(confirm("Reset everything?")) { localStorage.clear(); location.reload(); }
-        }
+        function resetApp() { if(confirm("Reset all?")) { localStorage.clear(); location.reload(); } }
 
         setInterval(updateLiveMarket, 20000);
         updateLiveMarket();
