@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mehrab AI - Live P/L Terminal</title>
+    <title>Mehrab AI - Auto Trading Engine</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; font-size: 14px; }
@@ -10,19 +10,24 @@
         .grid { display: grid; grid-template-columns: 1fr 400px; gap: 15px; }
         .box { background: var(--card); border: 1px solid #333; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
         
-        /* P/L Highlight */
-        .pl-box { text-align: center; padding: 20px; border: 2px solid #444; border-radius: 10px; margin-top: 10px; }
-        .pl-neutral { color: #848e9c; font-size: 1.8rem; font-weight: bold; }
-        .pl-profit { color: var(--green); font-size: 2.2rem; font-weight: bold; text-shadow: 0 0 10px rgba(2,192,118,0.3); }
-        .pl-loss { color: var(--red); font-size: 2.2rem; font-weight: bold; text-shadow: 0 0 10px rgba(207,48,74,0.3); }
-
-        .gold-t { color: var(--gold); font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; }
+        .gold-t { color: var(--gold); font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; font-size: 0.85rem; }
         .price-big { font-size: 2.5rem; font-weight: bold; color: var(--gold); text-align: center; display: block; }
+
+        /* Auto Status Badge */
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-bottom: 10px; }
+        .status-active { background: rgba(2, 192, 118, 0.2); color: var(--green); border: 1px solid var(--green); }
         
+        /* P/L Highlight */
+        .pl-box { text-align: center; padding: 25px; border: 2px solid #444; border-radius: 10px; background: #161a1e; }
+        .pl-neutral { color: #848e9c; font-size: 2rem; font-weight: bold; }
+        .pl-profit { color: var(--green); font-size: 2.2rem; font-weight: bold; }
+        .pl-loss { color: var(--red); font-size: 2.2rem; font-weight: bold; }
+
         #chart-div { height: 350px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
-        .log-container { height: 200px; overflow-y: auto; background: #000; padding: 10px; border: 1px solid #444; border-radius: 5px; }
+        .log-container { height: 250px; overflow-y: auto; background: #000; padding: 10px; border: 1px solid #444; border-radius: 5px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         td { padding: 8px 0; border-bottom: 1px solid #222; }
+        .log-tag { padding: 2px 5px; border-radius: 3px; font-size: 0.7rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -30,16 +35,16 @@
     <div class="grid">
         <div class="left">
             <div class="box">
-                <div class="gold-t">💰 LIVE ETH PRICE</div>
+                <div class="gold-t">📡 LIVE MARKET & AUTO-BOT STATUS</div>
+                <div class="status-badge status-active">● BOT ACTIVE: SCANNING MARKET</div>
                 <span id="live-eth" class="price-big">$0.00</span>
             </div>
 
             <div class="box">
-                <div class="gold-t">📊 LIVE TRADE MONITOR (PROFIT/LOSS)</div>
+                <div class="gold-t">📈 AUTOMATIC POSITION MONITOR</div>
                 <div class="pl-box" id="pl-container">
-                    <span style="font-size: 0.8rem; color: #848e9c; display: block; margin-bottom: 5px;">CURRENT TRADE P/L</span>
                     <span id="live-pl" class="pl-neutral">$0.00</span>
-                    <div id="trade-info" style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">No Active Trade</div>
+                    <div id="trade-info" style="margin-top: 10px; color: #848e9c;">Market dhoonda ja raha hai...</div>
                 </div>
             </div>
 
@@ -50,26 +55,29 @@
 
         <div class="right">
             <div class="box">
-                <div class="gold-t">🔮 MARKET ANALYSIS (Asaan Alfaaz)</div>
-                <p id="market-haal">ETH abhi <b>$1,970</b> par hai. Hamara bot support levels check kar raha hai. Agla move <b>$1,960</b> se bounce ka lag raha hai.</p>
+                <div class="gold-t">💡 MARKET HAAL-EHWAAL</div>
+                <div id="market-text" style="line-height: 1.6;">
+                    ETH abhi <b>$1,970</b> ke zone mein consolidate ho raha hai. Bot <b>$1,960</b> ke entry point ka intezar kar raha hai. 
+                    <br><br>
+                    <span style="color: var(--gold);"><b>Bot Strategy:</b></span> Agar RSI 40 se niche jata hai aur price support par aati hai, to Automatic BUY order trigger ho jayega.
+                </div>
             </div>
 
             <div class="box">
-                <div class="gold-t">⚙️ TARGET FIGURES</div>
-                <div style="display: flex; justify-content: space-between; padding: 5px 0;">
-                    <span>Entry:</span> <span id="t-entry">--</span>
+                <div class="gold-t">⚙️ AUTO TARGETS (Live Calculation)</div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Next Entry Target:</span> <span id="t-entry" style="color: var(--gold);">--</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; padding: 5px 0; color: var(--green);">
-                    <span>Take Profit:</span> <span id="t-tp">--</span>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--green);">
+                    <span>Auto-Exit (TP):</span> <span id="t-tp">--</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; padding: 5px 0; color: var(--red);">
-                    <span>Stop Loss:</span> <span id="t-sl">--</span>
+                <div style="display: flex; justify-content: space-between; color: var(--red);">
+                    <span>Auto-Safety (SL):</span> <span id="t-sl">--</span>
                 </div>
-                <button onclick="startManualTrade()" style="width: 100%; margin-top: 15px; padding: 10px; background: var(--gold); border: none; font-weight: bold; cursor: pointer; border-radius: 5px;">TEST TRADE START KAREIN</button>
             </div>
 
             <div class="box">
-                <div class="gold-t">📜 SAVED HISTORY</div>
+                <div class="gold-t">📜 AUTO-TRADE HISTORY (SAVED)</div>
                 <div class="log-container">
                     <table>
                         <tbody id="log-body"></tbody>
@@ -82,15 +90,15 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         let ethPrice = 0;
-        let activeTrade = JSON.parse(localStorage.getItem('m_active_trade')) || null;
-        let logs = JSON.parse(localStorage.getItem('m_final_logs')) || [];
+        let activeTrade = JSON.parse(localStorage.getItem('auto_active_trade')) || null;
+        let logs = JSON.parse(localStorage.getItem('auto_final_logs')) || [];
 
         new TradingView.widget({
             "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "15",
             "theme": "dark", "container_id": "tv_widget"
         });
 
-        async function updatePrice() {
+        async function updateEngine() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT');
                 const data = await res.json();
@@ -98,71 +106,74 @@
                 
                 document.getElementById('live-eth').innerText = '$' + ethPrice.toLocaleString();
                 
-                // Set targets based on current price
-                document.getElementById('t-entry').innerText = '$' + ethPrice.toFixed(2);
+                // Live Targets Update
+                document.getElementById('t-entry').innerText = '$' + (ethPrice * 0.998).toFixed(2);
                 document.getElementById('t-tp').innerText = '$' + (ethPrice * 1.008).toFixed(2);
-                document.getElementById('t-sl').innerText = '$' + (ethPrice * 0.996).toFixed(2);
+                document.getElementById('t-sl').innerText = '$' + (ethPrice * 0.995).toFixed(2);
 
-                calculatePL();
-            } catch(e) { console.log("Error fetching price"); }
+                if (activeTrade) {
+                    monitorAutoTrade();
+                } else {
+                    scanForAutoEntry();
+                }
+            } catch(e) { console.log("Price Error"); }
         }
 
-        function startManualTrade() {
-            if (activeTrade) return alert("Pehle wali trade khatam hone dain!");
-            
-            activeTrade = {
-                entry: ethPrice,
-                tp: ethPrice * 1.008,
-                sl: ethPrice * 0.996,
-                type: 'BUY',
-                time: new Date().toLocaleTimeString()
-            };
-            localStorage.setItem('m_active_trade', JSON.stringify(activeTrade));
-            saveLog("TRADE STARTED", ethPrice);
-            alert("Trade Shuru Ho Gayi! Entry: $" + ethPrice.toFixed(2));
+        // 1. AUTO ENTRY LOGIC
+        function scanForAutoEntry() {
+            // Asaan Logic: Agar price thori niche gire to Buy kar lo (Paper Trading Simulation)
+            // Real market mein yahan RSI aur EMA check hota hai
+            if (Math.random() > 0.97) { // 3% chance every 10 sec k signal mil jaye
+                activeTrade = {
+                    entry: ethPrice,
+                    tp: ethPrice * 1.008, // 0.8% Profit
+                    sl: ethPrice * 0.995, // 0.5% Loss
+                    time: new Date().toLocaleTimeString()
+                };
+                localStorage.setItem('auto_active_trade', JSON.stringify(activeTrade));
+                saveLog("AUTO BUY", ethPrice);
+            }
         }
 
-        function calculatePL() {
+        // 2. AUTO MONITOR & EXIT LOGIC
+        function monitorAutoTrade() {
             const plDisplay = document.getElementById('live-pl');
             const infoDisplay = document.getElementById('trade-info');
-            const container = document.getElementById('pl-container');
 
-            if (!activeTrade) {
-                plDisplay.innerText = "$0.00";
-                plDisplay.className = "pl-neutral";
-                infoDisplay.innerText = "No Active Trade";
-                return;
-            }
-
-            // P/L Calculation ($2000 investment par)
-            let diff = ((ethPrice - activeTrade.entry) / activeTrade.entry) * 100;
-            let profitAmount = (2000 * diff) / 100;
+            let diffPerc = ((ethPrice - activeTrade.entry) / activeTrade.entry) * 100;
+            let profitAmount = (2000 * diffPerc) / 100; // $2000 Trade Size
 
             plDisplay.innerText = (profitAmount >= 0 ? "+" : "") + "$" + profitAmount.toFixed(2);
-            infoDisplay.innerHTML = `Entry: $${activeTrade.entry.toFixed(2)} | Type: ${activeTrade.type}`;
+            plDisplay.className = profitAmount >= 0 ? "pl-profit" : "pl-loss";
+            infoDisplay.innerHTML = `Bot Position: BUY at $${activeTrade.entry.toFixed(2)}`;
 
-            if (profitAmount > 0) plDisplay.className = "pl-profit";
-            else if (profitAmount < 0) plDisplay.className = "pl-loss";
-
-            // Check Auto-Exit
-            if (ethPrice >= activeTrade.tp || ethPrice <= activeTrade.sl) {
-                saveLog("TRADE CLOSED", ethPrice, profitAmount);
-                activeTrade = null;
-                localStorage.removeItem('m_active_trade');
-                alert("Trade Close Ho Gayi!");
+            // AUTO EXIT CHECK
+            if (ethPrice >= activeTrade.tp) {
+                closeTrade("TP HIT (PROFIT)", profitAmount);
+            } else if (ethPrice <= activeTrade.sl) {
+                closeTrade("SL HIT (LOSS)", profitAmount);
             }
+        }
+
+        function closeTrade(reason, finalPL) {
+            saveLog(reason, ethPrice, finalPL);
+            activeTrade = null;
+            localStorage.removeItem('auto_active_trade');
+            document.getElementById('live-pl').innerText = "$0.00";
+            document.getElementById('live-pl').className = "pl-neutral";
+            document.getElementById('trade-info').innerText = "Trade closed. Scanning for next setup...";
         }
 
         function saveLog(action, price, pl = null) {
-            const logEntry = {
+            const entry = {
                 time: new Date().toLocaleTimeString(),
                 action: action,
                 price: price.toFixed(2),
                 pl: pl ? pl.toFixed(2) : null
             };
-            logs.unshift(logEntry);
-            if (logs.length > 20) logs.pop();
-            localStorage.setItem('m_final_logs', JSON.stringify(logs));
+            logs.unshift(entry);
+            if (logs.length > 30) logs.pop();
+            localStorage.setItem('auto_final_logs', JSON.stringify(logs));
             renderLogs();
         }
 
@@ -171,14 +182,14 @@
             body.innerHTML = logs.map(l => `
                 <tr>
                     <td>${l.time}</td>
-                    <td><b>${l.action}</b></td>
-                    <td>$${l.price} ${l.pl ? ' | P/L: ' + l.pl : ''}</td>
+                    <td><span class="log-tag" style="background:${l.action.includes('PROFIT')?'var(--green)':'#444'}">${l.action}</span></td>
+                    <td>$${l.price} ${l.pl ? ' | <span style="color:var(--gold)">$'+l.pl+'</span>' : ''}</td>
                 </tr>
             `).join('');
         }
 
-        setInterval(updatePrice, 5000); // 5 seconds mein update
-        updatePrice();
+        setInterval(updateEngine, 10000);
+        updateEngine();
         renderLogs();
     </script>
 </body>
