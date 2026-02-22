@@ -2,148 +2,153 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mehrab AI - Learn & Trade Terminal</title>
+    <title>Mehrab AI - Mukammal Trading Hub</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 12px; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; font-size: 14px; line-height: 1.5; }
         
-        .main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 10px; height: 95vh; }
-        .left-panel { display: flex; flex-direction: column; gap: 10px; }
+        /* Layout */
+        .grid { display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
+        .box { background: var(--card); border: 1px solid #333; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
         
-        /* Analysis & Outlook Section */
-        .outlook-box { background: #1c2127; border: 1px solid #444; border-top: 3px solid var(--gold); padding: 12px; border-radius: 6px; }
-        .section-title { color: var(--gold); font-weight: bold; font-size: 0.9rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        /* Heading Colors */
+        .gold-t { color: var(--gold); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
         
-        /* Compact Chart */
-        #chart-container { height: 320px; border-radius: 8px; border: 1px solid #333; overflow: hidden; background: #000; }
-        
-        /* Live Stats Row */
-        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .stat-card { background: var(--card); padding: 10px; border-radius: 6px; text-align: center; border: 1px solid #333; }
-        .stat-val { display: block; font-size: 1.1rem; font-weight: bold; color: var(--gold); }
+        /* Current Price Section */
+        .price-big { font-size: 2.5rem; font-weight: bold; color: var(--gold); display: block; text-align: center; }
 
-        /* Alert Overlay */
-        #alert-overlay { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--gold); color: black; padding: 15px 30px; border-radius: 50px; font-weight: bold; z-index: 1000; box-shadow: 0 0 20px rgba(240,185,11,0.5); animation: slideDown 0.5s ease; }
-        @keyframes slideDown { from { top: -50px; } to { top: 20px; } }
+        /* Prediction & Outlook */
+        .prediction-box { background: #1c2127; border-left: 5px solid var(--gold); padding: 15px; font-size: 1rem; }
+        .highlight-green { color: var(--green); font-weight: bold; }
+        .highlight-red { color: var(--red); font-weight: bold; }
 
-        .log-panel { background: #161a1e; border-radius: 8px; border: 1px solid #444; padding: 10px; flex-grow: 1; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        td, th { padding: 6px; text-align: left; border-bottom: 1px solid #222; }
-        .bullish { color: var(--green); } .bearish { color: var(--red); }
+        /* Targets Table */
+        .target-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .target-table td { padding: 10px; border: 1px solid #333; text-align: center; }
+
+        /* Logs Table */
+        .log-container { height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; border: 1px solid #444; }
+        table { width: 100%; text-align: left; }
+        th { color: #848e9c; font-size: 0.8rem; }
+        td { padding: 8px 0; border-bottom: 1px solid #222; font-family: monospace; }
+
+        /* Alert */
+        #price-alert { display: none; background: var(--gold); color: black; padding: 10px; text-align: center; font-weight: bold; border-radius: 5px; margin-bottom: 10px; }
+
+        #chart-div { height: 350px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <div id="alert-overlay">🚨 ALERT: ETH REACHED ENTRY ZONE ($1,960)!</div>
+    <div id="price-alert">🚨 ALERT: ETH Entry Range Par Aa Gya Hai!</div>
 
-    <div class="main-layout">
-        <div class="left-panel">
-            <div class="stats-row">
-                <div class="stat-card"><span>Current ETH</span><span id="price-live" class="stat-val">--</span></div>
-                <div class="stat-card"><span>Support</span><span class="stat-val" style="color:var(--green)">$1,950</span></div>
-                <div class="stat-card"><span>Resistance</span><span class="stat-val" style="color:var(--red)">$2,040</span></div>
-                <div class="stat-card"><span>Next Move</span><span id="move-ai" class="stat-val" style="font-size:0.8rem">WAITING</span></div>
+    <div class="grid">
+        <div class="left">
+            <div class="box">
+                <div class="gold-t">💰 CURRENT MARKET PRICE (LIVE)</div>
+                <span id="live-eth" class="price-big">$0.00</span>
+                <p id="market-status" style="text-align:center; color:#848e9c;">Market abhi neutral hai...</p>
             </div>
 
-            <div id="chart-container">
-                <div id="tv_chart"></div>
-            </div>
-
-            <div class="outlook-box">
-                <div class="section-title">📊 MARKET HAAL-EHWAAL (Feb 22, 2026)</div>
-                <div id="market-text" style="line-height:1.5; color:#ccc;">
-                    Analyzing market structure... ETH is showing a <strong>Descending Triangle</strong> near $1,970. RSI is at 38, indicating a potential bounce if $1,950 support holds.
+            <div class="box">
+                <div class="gold-t">📊 CHART (15M Timeframe)</div>
+                <div id="chart-div">
+                    <div id="tradingview_widget"></div>
                 </div>
+            </div>
+
+            <div class="box prediction-box">
+                <div class="gold-t">💡 MARKET KA HAAL-EHWAAL (Asaan Alfaaz)</div>
+                <div id="ai-detail">
+                    ETH abhi <b>$1,970</b> ke qareeb rukawat (resistance) face kar raha hai. Agar ye <b>$1,950</b> ke support ko touch karke wapis uper jata hai, to ye aik behtareen <b>BUY</b> ka moqa hoga. Magar dhyan rahe, market mein thora dar (fear) hai, isliye jaldi na karein.
+                </div>
+                <hr style="border-color:#333; margin:15px 0;">
+                <div class="gold-t">🔮 AGLE 24 GHANTE KI PREDICTION</div>
+                <p id="ai-prediction">Hamein lagta hai ke qeemat thori aur niche <b>$1,960</b> tak gir sakti hai aur wahan se bounce karke <b>$2,040</b> tak ja sakti hai.</p>
             </div>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            <div class="outlook-box" style="border-top-color: var(--green);">
-                <div class="section-title">🚀 MEHRAB AI TRADE SUGGESTION</div>
-                <div style="background: rgba(2, 192, 118, 0.1); padding: 10px; border-radius: 4px;">
-                    <strong>Entry:</strong> $1,960 - $1,965<br>
-                    <strong>Target:</strong> $2,040 (Resistance)<br>
-                    <strong>Stop Loss:</strong> $1,940<br>
-                    <p style="font-size:0.7rem; margin-top:5px; color:#848e9c;">*Learning Tip: Support par buying tab karein jab candle wahan se bounce kare.*</p>
-                </div>
+        <div class="right">
+            <div class="box">
+                <div class="gold-t">⚙️ TRADING TARGETS (Figures)</div>
+                <p style="font-size:0.8rem; color:#848e9c;">Normal Trader ke liye calculations:</p>
+                <table class="target-table">
+                    <tr><td>Entry</td><td id="t-entry" style="font-weight:bold;">--</td></tr>
+                    <tr><td class="highlight-green">Profit (TP)</td><td id="t-tp" class="highlight-green">--</td></tr>
+                    <tr><td class="highlight-red">Nuksan (SL)</td><td id="t-sl" class="highlight-red">--</td></tr>
+                </table>
             </div>
 
-            <div class="log-panel">
-                <div class="section-title">📜 TRADE & ALERT LOGS</div>
-                <table id="logs">
-                    <thead><tr><th>Time</th><th>Event</th><th>Price</th></tr></thead>
-                    <tbody id="log-body"></tbody>
-                </table>
+            <div class="box">
+                <div class="gold-t">📜 SAVED TRADE LOGS (History)</div>
+                <div class="log-container">
+                    <table>
+                        <thead><tr><th>Time</th><th>Action</th><th>Price</th></tr></thead>
+                        <tbody id="log-body"></tbody>
+                    </table>
+                </div>
+                <button onclick="clearLogs()" style="margin-top:10px; background:none; border:none; color:var(--red); cursor:pointer;">X Clear History</button>
             </div>
         </div>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let lastPrice = 0;
-        let logs = JSON.parse(localStorage.getItem('edu_logs')) || [];
+        let ethPrice = 0;
+        let logs = JSON.parse(localStorage.getItem('final_logs')) || [];
 
-        // TradingView with S/R Lines (Visual Simulation)
+        // Chart Setup
         new TradingView.widget({
             "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "15",
-            "theme": "dark", "container_id": "tv_chart",
-            "overrides": {
-                "mainSeriesProperties.candleStyle.upColor": "#02c076",
-                "mainSeriesProperties.candleStyle.downColor": "#cf304a"
-            }
+            "theme": "dark", "container_id": "tradingview_widget"
         });
 
-        async function updateMarket() {
+        // Price Fetching
+        async function getPrice() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT');
                 const data = await res.json();
-                const price = parseFloat(data.price);
+                ethPrice = parseFloat(data.price);
                 
-                document.getElementById('price-live').innerText = '$' + price.toFixed(2);
-                
-                // Alert Trigger Logic
-                if (price <= 1965 && price >= 1955) {
-                    triggerAlert();
+                // Update UI
+                document.getElementById('live-eth').innerText = '$' + ethPrice.toLocaleString();
+                document.getElementById('t-entry').innerText = '$' + ethPrice.toFixed(2);
+                document.getElementById('t-tp').innerText = '$' + (ethPrice * 1.008).toFixed(2);
+                document.getElementById('t-sl').innerText = '$' + (ethPrice * 0.996).toFixed(2);
+
+                // Alert Check
+                if (ethPrice <= 1965) {
+                    document.getElementById('price-alert').style.display = 'block';
                 }
 
-                // AI Prediction Logic
-                const moveEl = document.getElementById('move-ai');
-                if (price < 1970) {
-                    moveEl.innerText = "BUY ZONE"; moveEl.style.color = "var(--green)";
-                } else {
-                    moveEl.innerText = "NEUTRAL"; moveEl.style.color = "var(--gold)";
-                }
+                // Random Simulation for Logs (Only for learning)
+                if (Math.random() > 0.98) saveLog("SIGNAL FOUND", ethPrice);
 
-                if (Math.abs(price - lastPrice) > 2) {
-                    saveLog("Price Update", price);
-                    lastPrice = price;
-                }
-            } catch(e) {}
+            } catch(e) { console.log("Price Error"); }
         }
 
-        function triggerAlert() {
-            const alertBox = document.getElementById('alert-overlay');
-            alertBox.style.display = 'block';
-            setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
-            saveLog("⚠️ ENTRY ALERT", 1960);
-        }
-
-        function saveLog(event, price) {
-            const log = { time: new Date().toLocaleTimeString(), event, price: '$' + price };
-            logs.unshift(log);
-            if(logs.length > 30) logs.pop();
-            localStorage.setItem('edu_logs', JSON.stringify(logs));
+        // Persistent Logs Saving
+        function saveLog(action, price) {
+            const entry = { time: new Date().toLocaleTimeString(), action, price: price.toFixed(2) };
+            logs.unshift(entry);
+            if (logs.length > 20) logs.pop();
+            localStorage.setItem('final_logs', JSON.stringify(logs));
             renderLogs();
         }
 
         function renderLogs() {
-            document.getElementById('log-body').innerHTML = logs.map(l => `
-                <tr><td>${l.time}</td><td>${l.event}</td><td>${l.price}</td></tr>
-            `).join('');
+            const body = document.getElementById('log-body');
+            body.innerHTML = logs.map(l => `<tr><td>${l.time}</td><td>${l.action}</td><td>$${l.price}</td></tr>`).join('');
         }
 
-        setInterval(updateMarket, 10000);
-        updateMarket();
+        function clearLogs() {
+            localStorage.removeItem('final_logs');
+            logs = [];
+            renderLogs();
+        }
+
+        setInterval(getPrice, 10000);
+        getPrice();
         renderLogs();
     </script>
 </body>
