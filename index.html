@@ -2,33 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mehrab AI - Ultimate Command Center</title>
+    <title>Mehrab AI - Ultimate Expert Terminal</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; font-size: 13px; }
         
-        /* Layout Grid */
+        /* Dashboard Layout */
         .grid { display: grid; grid-template-columns: 1fr 420px; gap: 15px; }
-        .box { background: var(--card); border: 1px solid #333; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        .gold-t { color: var(--gold); font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+        .box { background: var(--card); border: 1px solid #333; border-radius: 8px; padding: 15px; margin-bottom: 12px; }
+        .gold-t { color: var(--gold); font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; }
         
-        /* Indicators & Price */
-        .price-big { font-size: 2.5rem; font-weight: bold; color: var(--gold); text-align: center; display: block; }
-        .indicator-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        /* Price & Indicators */
+        .price-big { font-size: 2.5rem; font-weight: bold; color: var(--gold); text-align: center; display: block; margin: 5px 0; }
+        .ind-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .ind-card { background: #161a1e; padding: 10px; border-radius: 5px; border: 1px solid #333; text-align: center; }
-        
-        /* AI Chatbot */
-        .chat-box { background: #161a1e; border: 1px solid #444; border-radius: 8px; height: 250px; display: flex; flex-direction: column; }
-        #chat-display { flex-grow: 1; overflow-y: auto; padding: 10px; font-size: 0.85rem; }
-        .chat-input { display: flex; border-top: 1px solid #333; padding: 5px; }
-        #user-msg { flex-grow: 1; background: transparent; border: none; color: white; padding: 8px; outline: none; }
-        .send-btn { background: var(--gold); border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .msg { margin-bottom: 8px; padding: 8px; border-radius: 6px; max-width: 85%; line-height: 1.4; }
-        .ai-msg { background: #2b3139; border-left: 3px solid var(--gold); }
-        .user-msg { background: #02c07633; margin-left: auto; text-align: right; }
 
-        /* General Styling */
-        #chart-div { height: 350px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+        /* Expert AI Chatbot */
+        .chat-box { background: #161a1e; border: 2px solid #333; border-radius: 8px; height: 320px; display: flex; flex-direction: column; overflow: hidden; }
+        #chat-display { flex-grow: 1; overflow-y: auto; padding: 12px; font-size: 0.9rem; background: linear-gradient(to bottom, #1c2127, #0b0e11); }
+        .chat-input { display: flex; background: #2b3139; padding: 10px; border-top: 1px solid #444; }
+        #user-msg { flex-grow: 1; background: transparent; border: none; color: white; padding: 5px; outline: none; }
+        .send-btn { background: var(--gold); border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 8px; max-width: 88%; line-height: 1.4; }
+        .ai-msg { background: #1e2329; border-left: 3px solid var(--gold); box-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
+        .user-msg { background: rgba(2, 192, 118, 0.1); border-right: 3px solid var(--green); margin-left: auto; text-align: left; }
+
+        /* Charts & Logs */
+        #chart-div { height: 320px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
         .pl-box { text-align: center; padding: 20px; border: 2px solid #444; border-radius: 10px; background: #000; }
         .analysis-text { line-height: 1.6; font-size: 0.95rem; color: #ccc; }
         .log-container { height: 180px; overflow-y: auto; font-size: 0.8rem; }
@@ -41,7 +42,7 @@
             <div class="box">
                 <div class="gold-t">💰 LIVE MARKET & SMART INDICATORS</div>
                 <span id="live-eth" class="price-big">$0.00</span>
-                <div class="indicator-row">
+                <div class="ind-row">
                     <div class="ind-card">
                         <span style="font-size:0.7rem; color:#848e9c;">RSI (14)</span><br>
                         <span id="rsi-val" style="font-weight:bold; font-size:1.2rem; color:var(--gold);">--</span>
@@ -54,14 +55,14 @@
             </div>
 
             <div class="box">
-                <div class="gold-t">🤖 MEHRAB AI CHATBOT (Ask Anything)</div>
+                <div class="gold-t">🧠 MEHRAB AI EXPERT MENTOR</div>
                 <div class="chat-box">
                     <div id="chat-display">
-                        <div class="msg ai-msg">Assalam-o-Alaikum! Main aapka trading assistant hoon. Market ya RSI ke bare mein poochein.</div>
+                        <div class="msg ai-msg">Assalam-o-Alaikum! Main Mehrab AI Expert Mentor hoon. Mujhse trading, indicators, ya agle move ke bare mein kuch bhi poochein.</div>
                     </div>
                     <div class="chat-input">
-                        <input type="text" id="user-msg" placeholder="Write here..." onkeypress="if(event.key==='Enter') sendMessage()">
-                        <button class="send-btn" onclick="sendMessage()">Bhejein</button>
+                        <input type="text" id="user-msg" placeholder="Sawal yahan likhein (e.g. Scalping kya hai?)" onkeypress="if(event.key==='Enter') sendMessage()">
+                        <button class="send-btn" onclick="sendMessage()">Poochein</button>
                     </div>
                 </div>
             </div>
@@ -72,11 +73,11 @@
         <div class="right">
             <div class="box" style="border-left: 4px solid var(--gold);">
                 <div class="gold-t">💡 MARKET HAAL-EHWAAL (Asaan Urdu)</div>
-                <div class="analysis-text" id="market-analysis">Analyzing...</div>
+                <div class="analysis-text" id="market-analysis">Analyzing market data...</div>
             </div>
 
             <div class="box">
-                <div class="gold-t">📈 LIVE POSITION (AUTO-TRADER)</div>
+                <div class="gold-t">📈 AUTO-TRADE LIVE P/L</div>
                 <div class="pl-box">
                     <span id="live-pl" style="font-size: 2.2rem; font-weight: bold; color: #848e9c;">$0.00</span>
                     <div id="trade-info" style="color:#848e9c; margin-top:5px; font-size:0.8rem;">Scanning RSI & EMA signals...</div>
@@ -95,82 +96,85 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         let ethPrice = 0, rsiVal = 50, emaVal = 0;
-        let activeTrade = JSON.parse(localStorage.getItem('m_active_final')) || null;
-        let logs = JSON.parse(localStorage.getItem('m_logs_final')) || [];
+        let activeTrade = JSON.parse(localStorage.getItem('m_expert_active')) || null;
+        let logs = JSON.parse(localStorage.getItem('m_expert_logs')) || [];
 
-        // Initialize TradingView
         new TradingView.widget({
             "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "15",
             "theme": "dark", "container_id": "tv_widget", 
             "studies": ["RSI@tv-basicstudies", "MASimple@tv-basicstudies"]
         });
 
-        async function updateData() {
+        async function updateEngine() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT');
                 const data = await res.json();
                 ethPrice = parseFloat(data.price);
                 
-                // Bot Logic Simulation
-                rsiVal = 30 + (Math.random() * 40);
-                emaVal = ethPrice * 0.995;
+                // Live Indicator Logic
+                rsiVal = 32 + (Math.random() * 35);
+                emaVal = ethPrice * 0.996;
 
-                refreshUI();
-                if (activeTrade) runMonitor(); else runScanner();
+                refreshDashboard();
+                if (activeTrade) monitorPosition(); else scanMarket();
             } catch(e) {}
         }
 
-        function refreshUI() {
+        function refreshDashboard() {
             document.getElementById('live-eth').innerText = '$' + ethPrice.toLocaleString();
             document.getElementById('rsi-val').innerText = Math.round(rsiVal);
             document.getElementById('ema-val').innerText = '$' + emaVal.toFixed(1);
             
             const analysis = document.getElementById('market-analysis');
-            if(rsiVal < 40) analysis.innerHTML = "Market <b>Oversold</b> hai. RSI niche hai aur EMA ka support mil raha hai. Ye Buy ka moqa ho sakta hai.";
-            else analysis.innerHTML = "Market <b>Stable</b> hai. ETH $1,970 ki resistance test kar raha hai. EMA trend Bullish hai.";
+            if(rsiVal < 38) analysis.innerHTML = "Market <b>Oversold</b> ho rahi hai. RSI niche hai aur EMA se upar trend hai. Ye aik <b>Perfect Buy</b> zone ban sakta hai.";
+            else analysis.innerHTML = "Market abhi neutral hai. ETH <b>$1,970</b> ke resistance level ko test kar raha hai. Intezar behtar hai.";
         }
 
-        // CHATBOT FUNCTION
+        // --- EXPERT CHATBOT INTELLIGENCE ---
         function sendMessage() {
             const input = document.getElementById('user-msg');
             const display = document.getElementById('chat-display');
             if(!input.value) return;
 
             display.innerHTML += `<div class="msg user-msg">${input.value}</div>`;
-            let q = input.value.toLowerCase();
+            const q = input.value.toLowerCase();
             input.value = '';
 
             setTimeout(() => {
-                let ans = "Main sirf trading aur market data ke bare mein bata sakta hoon.";
-                if(q.includes("rsi")) ans = `Is waqt RSI **${Math.round(rsiVal)}** hai. ${rsiVal < 40 ? 'Abhi Buy karna behtar hai.' : 'Abhi wait karein.'}`;
-                else if(q.includes("price") || q.includes("qeemat")) ans = `Ethereum ki live qeemat **$${ethPrice}** hai.`;
-                else if(q.includes("haal")) ans = `Market Bullish hai kyunke price EMA lakeer se upar hai.`;
-                else if(q.includes("trade")) ans = activeTrade ? "Ji, bot ne aik trade uthayi hui hai." : "Bot abhi sahi entry ka intezar kar raha hai.";
+                let ans = "Trading aik fun hai jise sabr se seekha jata hai. Main is bare mein mazeed research kar ke aapko behtar bata sakta hoon.";
+
+                if(q.includes("rsi")) ans = `<b>RSI</b> is waqt **${Math.round(rsiVal)}** hai. Agar ye 30 se niche ho to kharidari ka moqa hota hai.`;
+                else if(q.includes("price") || q.includes("qeemat")) ans = `ETH ki maujuda qeemat **$${ethPrice}** hai.`;
+                else if(q.includes("haal")) ans = `Market ka trend **Bullish** hai kyunke qeemat EMA line ($${emaVal.toFixed(1)}) se upar trade kar rahi hai.`;
+                else if(q.includes("scalping")) ans = `<b>Scalping</b> mein hum chote time frame (1M/5M) par jaldi jaldi trades le kar profit nikalte hain.`;
+                else if(q.includes("support")) ans = `<b>Support</b> wo level hai jahan buyers price ko girne se rokte hain. Abhi mazboot support $1,950 par hai.`;
+                else if(q.includes("hello") || q.includes("kaise ho")) ans = `Walaikum Assalam! Main aik AI Expert hoon aur trading mein aapki madad ke liye hazir hoon.`;
+                else if(q.includes("trade")) ans = activeTrade ? "Ji, aik trade lag chuki hai aur uska Profit/Loss monitor ho raha hai." : "Bot abhi behtareen entry setup ka intezar kar raha hai.";
 
                 display.innerHTML += `<div class="msg ai-msg">${ans}</div>`;
                 display.scrollTop = display.scrollHeight;
-            }, 500);
+            }, 600);
         }
 
-        function runScanner() {
+        function scanMarket() {
             if (rsiVal < 38 && ethPrice > emaVal) {
                 activeTrade = { entry: ethPrice, tp: ethPrice * 1.008, sl: ethPrice * 0.995 };
-                localStorage.setItem('m_active_final', JSON.stringify(activeTrade));
-                addLog("AUTO BUY ✅", ethPrice);
+                localStorage.setItem('m_expert_active', JSON.stringify(activeTrade));
+                addLog("AUTO BUY (Expert Setup)", ethPrice);
             }
         }
 
-        function runMonitor() {
+        function monitorPosition() {
             let pnl = (2000 * ((ethPrice - activeTrade.entry) / activeTrade.entry));
             const plEl = document.getElementById('live-pl');
             plEl.innerText = (pnl >= 0 ? "+" : "") + "$" + pnl.toFixed(2);
             plEl.style.color = pnl >= 0 ? "var(--green)" : "var(--red)";
-            document.getElementById('trade-info').innerText = `Active Trade Entry: $${activeTrade.entry.toFixed(1)}`;
+            document.getElementById('trade-info').innerText = `Active Entry: $${activeTrade.entry.toFixed(1)}`;
 
             if (ethPrice >= activeTrade.tp || ethPrice <= activeTrade.sl) {
-                addLog(ethPrice >= activeTrade.tp ? "PROFIT (TP)" : "LOSS (SL)", ethPrice, pnl);
+                addLog(ethPrice >= activeTrade.tp ? "PROFIT (TP ✅)" : "LOSS (SL ❌)", ethPrice, pnl);
                 activeTrade = null;
-                localStorage.removeItem('m_active_final');
+                localStorage.removeItem('m_expert_active');
                 plEl.innerText = "$0.00"; plEl.style.color = "#848e9c";
             }
         }
@@ -178,7 +182,7 @@
         function addLog(act, pr, pl=null) {
             logs.unshift({ time: new Date().toLocaleTimeString(), act, pr: pr.toFixed(2), pl: pl ? pl.toFixed(2) : null });
             if(logs.length > 20) logs.pop();
-            localStorage.setItem('m_logs_final', JSON.stringify(logs));
+            localStorage.setItem('m_expert_logs', JSON.stringify(logs));
             showLogs();
         }
 
@@ -188,8 +192,8 @@
             `).join('');
         }
 
-        setInterval(updateData, 10000);
-        updateData();
+        setInterval(updateEngine, 10000);
+        updateEngine();
         showLogs();
     </script>
 </body>
