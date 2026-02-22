@@ -2,92 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mehrab AI - Mukammal Trading Hub</title>
+    <title>Mehrab AI - Live P/L Terminal</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; font-size: 14px; line-height: 1.5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; font-size: 14px; }
         
-        /* Layout */
-        .grid { display: grid; grid-template-columns: 1fr 400px; gap: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 400px; gap: 15px; }
         .box { background: var(--card); border: 1px solid #333; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
         
-        /* Heading Colors */
-        .gold-t { color: var(--gold); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
+        /* P/L Highlight */
+        .pl-box { text-align: center; padding: 20px; border: 2px solid #444; border-radius: 10px; margin-top: 10px; }
+        .pl-neutral { color: #848e9c; font-size: 1.8rem; font-weight: bold; }
+        .pl-profit { color: var(--green); font-size: 2.2rem; font-weight: bold; text-shadow: 0 0 10px rgba(2,192,118,0.3); }
+        .pl-loss { color: var(--red); font-size: 2.2rem; font-weight: bold; text-shadow: 0 0 10px rgba(207,48,74,0.3); }
+
+        .gold-t { color: var(--gold); font-weight: bold; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; }
+        .price-big { font-size: 2.5rem; font-weight: bold; color: var(--gold); text-align: center; display: block; }
         
-        /* Current Price Section */
-        .price-big { font-size: 2.5rem; font-weight: bold; color: var(--gold); display: block; text-align: center; }
-
-        /* Prediction & Outlook */
-        .prediction-box { background: #1c2127; border-left: 5px solid var(--gold); padding: 15px; font-size: 1rem; }
-        .highlight-green { color: var(--green); font-weight: bold; }
-        .highlight-red { color: var(--red); font-weight: bold; }
-
-        /* Targets Table */
-        .target-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .target-table td { padding: 10px; border: 1px solid #333; text-align: center; }
-
-        /* Logs Table */
-        .log-container { height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; border: 1px solid #444; }
-        table { width: 100%; text-align: left; }
-        th { color: #848e9c; font-size: 0.8rem; }
-        td { padding: 8px 0; border-bottom: 1px solid #222; font-family: monospace; }
-
-        /* Alert */
-        #price-alert { display: none; background: var(--gold); color: black; padding: 10px; text-align: center; font-weight: bold; border-radius: 5px; margin-bottom: 10px; }
-
         #chart-div { height: 350px; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+        .log-container { height: 200px; overflow-y: auto; background: #000; padding: 10px; border: 1px solid #444; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        td { padding: 8px 0; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <div id="price-alert">🚨 ALERT: ETH Entry Range Par Aa Gya Hai!</div>
-
     <div class="grid">
         <div class="left">
             <div class="box">
-                <div class="gold-t">💰 CURRENT MARKET PRICE (LIVE)</div>
+                <div class="gold-t">💰 LIVE ETH PRICE</div>
                 <span id="live-eth" class="price-big">$0.00</span>
-                <p id="market-status" style="text-align:center; color:#848e9c;">Market abhi neutral hai...</p>
             </div>
 
             <div class="box">
-                <div class="gold-t">📊 CHART (15M Timeframe)</div>
-                <div id="chart-div">
-                    <div id="tradingview_widget"></div>
+                <div class="gold-t">📊 LIVE TRADE MONITOR (PROFIT/LOSS)</div>
+                <div class="pl-box" id="pl-container">
+                    <span style="font-size: 0.8rem; color: #848e9c; display: block; margin-bottom: 5px;">CURRENT TRADE P/L</span>
+                    <span id="live-pl" class="pl-neutral">$0.00</span>
+                    <div id="trade-info" style="font-size: 0.9rem; margin-top: 10px; color: #ccc;">No Active Trade</div>
                 </div>
             </div>
 
-            <div class="box prediction-box">
-                <div class="gold-t">💡 MARKET KA HAAL-EHWAAL (Asaan Alfaaz)</div>
-                <div id="ai-detail">
-                    ETH abhi <b>$1,970</b> ke qareeb rukawat (resistance) face kar raha hai. Agar ye <b>$1,950</b> ke support ko touch karke wapis uper jata hai, to ye aik behtareen <b>BUY</b> ka moqa hoga. Magar dhyan rahe, market mein thora dar (fear) hai, isliye jaldi na karein.
-                </div>
-                <hr style="border-color:#333; margin:15px 0;">
-                <div class="gold-t">🔮 AGLE 24 GHANTE KI PREDICTION</div>
-                <p id="ai-prediction">Hamein lagta hai ke qeemat thori aur niche <b>$1,960</b> tak gir sakti hai aur wahan se bounce karke <b>$2,040</b> tak ja sakti hai.</p>
+            <div id="chart-div">
+                <div id="tv_widget"></div>
             </div>
         </div>
 
         <div class="right">
             <div class="box">
-                <div class="gold-t">⚙️ TRADING TARGETS (Figures)</div>
-                <p style="font-size:0.8rem; color:#848e9c;">Normal Trader ke liye calculations:</p>
-                <table class="target-table">
-                    <tr><td>Entry</td><td id="t-entry" style="font-weight:bold;">--</td></tr>
-                    <tr><td class="highlight-green">Profit (TP)</td><td id="t-tp" class="highlight-green">--</td></tr>
-                    <tr><td class="highlight-red">Nuksan (SL)</td><td id="t-sl" class="highlight-red">--</td></tr>
-                </table>
+                <div class="gold-t">🔮 MARKET ANALYSIS (Asaan Alfaaz)</div>
+                <p id="market-haal">ETH abhi <b>$1,970</b> par hai. Hamara bot support levels check kar raha hai. Agla move <b>$1,960</b> se bounce ka lag raha hai.</p>
             </div>
 
             <div class="box">
-                <div class="gold-t">📜 SAVED TRADE LOGS (History)</div>
+                <div class="gold-t">⚙️ TARGET FIGURES</div>
+                <div style="display: flex; justify-content: space-between; padding: 5px 0;">
+                    <span>Entry:</span> <span id="t-entry">--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; color: var(--green);">
+                    <span>Take Profit:</span> <span id="t-tp">--</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; color: var(--red);">
+                    <span>Stop Loss:</span> <span id="t-sl">--</span>
+                </div>
+                <button onclick="startManualTrade()" style="width: 100%; margin-top: 15px; padding: 10px; background: var(--gold); border: none; font-weight: bold; cursor: pointer; border-radius: 5px;">TEST TRADE START KAREIN</button>
+            </div>
+
+            <div class="box">
+                <div class="gold-t">📜 SAVED HISTORY</div>
                 <div class="log-container">
                     <table>
-                        <thead><tr><th>Time</th><th>Action</th><th>Price</th></tr></thead>
                         <tbody id="log-body"></tbody>
                     </table>
                 </div>
-                <button onclick="clearLogs()" style="margin-top:10px; background:none; border:none; color:var(--red); cursor:pointer;">X Clear History</button>
             </div>
         </div>
     </div>
@@ -95,60 +82,103 @@
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
         let ethPrice = 0;
-        let logs = JSON.parse(localStorage.getItem('final_logs')) || [];
+        let activeTrade = JSON.parse(localStorage.getItem('m_active_trade')) || null;
+        let logs = JSON.parse(localStorage.getItem('m_final_logs')) || [];
 
-        // Chart Setup
         new TradingView.widget({
             "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "15",
-            "theme": "dark", "container_id": "tradingview_widget"
+            "theme": "dark", "container_id": "tv_widget"
         });
 
-        // Price Fetching
-        async function getPrice() {
+        async function updatePrice() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT');
                 const data = await res.json();
                 ethPrice = parseFloat(data.price);
                 
-                // Update UI
                 document.getElementById('live-eth').innerText = '$' + ethPrice.toLocaleString();
+                
+                // Set targets based on current price
                 document.getElementById('t-entry').innerText = '$' + ethPrice.toFixed(2);
                 document.getElementById('t-tp').innerText = '$' + (ethPrice * 1.008).toFixed(2);
                 document.getElementById('t-sl').innerText = '$' + (ethPrice * 0.996).toFixed(2);
 
-                // Alert Check
-                if (ethPrice <= 1965) {
-                    document.getElementById('price-alert').style.display = 'block';
-                }
-
-                // Random Simulation for Logs (Only for learning)
-                if (Math.random() > 0.98) saveLog("SIGNAL FOUND", ethPrice);
-
-            } catch(e) { console.log("Price Error"); }
+                calculatePL();
+            } catch(e) { console.log("Error fetching price"); }
         }
 
-        // Persistent Logs Saving
-        function saveLog(action, price) {
-            const entry = { time: new Date().toLocaleTimeString(), action, price: price.toFixed(2) };
-            logs.unshift(entry);
+        function startManualTrade() {
+            if (activeTrade) return alert("Pehle wali trade khatam hone dain!");
+            
+            activeTrade = {
+                entry: ethPrice,
+                tp: ethPrice * 1.008,
+                sl: ethPrice * 0.996,
+                type: 'BUY',
+                time: new Date().toLocaleTimeString()
+            };
+            localStorage.setItem('m_active_trade', JSON.stringify(activeTrade));
+            saveLog("TRADE STARTED", ethPrice);
+            alert("Trade Shuru Ho Gayi! Entry: $" + ethPrice.toFixed(2));
+        }
+
+        function calculatePL() {
+            const plDisplay = document.getElementById('live-pl');
+            const infoDisplay = document.getElementById('trade-info');
+            const container = document.getElementById('pl-container');
+
+            if (!activeTrade) {
+                plDisplay.innerText = "$0.00";
+                plDisplay.className = "pl-neutral";
+                infoDisplay.innerText = "No Active Trade";
+                return;
+            }
+
+            // P/L Calculation ($2000 investment par)
+            let diff = ((ethPrice - activeTrade.entry) / activeTrade.entry) * 100;
+            let profitAmount = (2000 * diff) / 100;
+
+            plDisplay.innerText = (profitAmount >= 0 ? "+" : "") + "$" + profitAmount.toFixed(2);
+            infoDisplay.innerHTML = `Entry: $${activeTrade.entry.toFixed(2)} | Type: ${activeTrade.type}`;
+
+            if (profitAmount > 0) plDisplay.className = "pl-profit";
+            else if (profitAmount < 0) plDisplay.className = "pl-loss";
+
+            // Check Auto-Exit
+            if (ethPrice >= activeTrade.tp || ethPrice <= activeTrade.sl) {
+                saveLog("TRADE CLOSED", ethPrice, profitAmount);
+                activeTrade = null;
+                localStorage.removeItem('m_active_trade');
+                alert("Trade Close Ho Gayi!");
+            }
+        }
+
+        function saveLog(action, price, pl = null) {
+            const logEntry = {
+                time: new Date().toLocaleTimeString(),
+                action: action,
+                price: price.toFixed(2),
+                pl: pl ? pl.toFixed(2) : null
+            };
+            logs.unshift(logEntry);
             if (logs.length > 20) logs.pop();
-            localStorage.setItem('final_logs', JSON.stringify(logs));
+            localStorage.setItem('m_final_logs', JSON.stringify(logs));
             renderLogs();
         }
 
         function renderLogs() {
             const body = document.getElementById('log-body');
-            body.innerHTML = logs.map(l => `<tr><td>${l.time}</td><td>${l.action}</td><td>$${l.price}</td></tr>`).join('');
+            body.innerHTML = logs.map(l => `
+                <tr>
+                    <td>${l.time}</td>
+                    <td><b>${l.action}</b></td>
+                    <td>$${l.price} ${l.pl ? ' | P/L: ' + l.pl : ''}</td>
+                </tr>
+            `).join('');
         }
 
-        function clearLogs() {
-            localStorage.removeItem('final_logs');
-            logs = [];
-            renderLogs();
-        }
-
-        setInterval(getPrice, 10000);
-        getPrice();
+        setInterval(updatePrice, 5000); // 5 seconds mein update
+        updatePrice();
         renderLogs();
     </script>
 </body>
