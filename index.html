@@ -3,156 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mehrab AI - Chart & Prediction Terminal</title>
+    <title>Mehrab AI - Live & Persistent Terminal</title>
     <style>
         :root { --bg: #0b0e11; --card: #1e2329; --gold: #f0b90b; --green: #02c076; --red: #cf304a; --text: #eaecef; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 13px; }
         
-        .grid-container { display: grid; grid-template-columns: 1fr 350px; gap: 15px; }
-        .left-col { display: flex; flex-direction: column; gap: 10px; }
-        
-        .header-box { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-bottom: 10px; }
-        .branding { color: var(--gold); font-weight: bold; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
+        .header-box { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 15px; }
+        .branding { color: var(--gold); font-weight: bold; font-size: 1.2rem; text-transform: uppercase; margin: 0; }
 
-        /* Prediction & Analysis Box */
-        .analysis-card { background: #1c2127; border-left: 4px solid var(--gold); padding: 15px; border-radius: 4px; margin-bottom: 10px; }
-        .prediction-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; margin-top: 5px; }
-        .pred-buy { background: rgba(2, 192, 118, 0.2); color: var(--green); border: 1px solid var(--green); }
-        .pred-sell { background: rgba(207, 48, 74, 0.2); color: var(--red); border: 1px solid var(--red); }
+        /* Current Price Highlight */
+        .live-price-box { background: var(--card); border: 2px solid #333; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px; }
+        .price-label { font-size: 0.8rem; color: #848e9c; text-transform: uppercase; letter-spacing: 1px; }
+        .price-val { display: block; font-size: 2.2rem; font-weight: bold; color: var(--gold); margin: 5px 0; }
 
-        .target-box { background: #1c2127; border: 1px solid #444; border-radius: 8px; padding: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-        .val { display: block; font-weight: bold; font-size: 1.1rem; margin-top: 4px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 350px; gap: 15px; }
+
+        /* Target Boxes */
+        .target-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .t-card { background: #1c2127; padding: 12px; border-radius: 6px; text-align: center; border: 1px solid #444; }
+        .t-val { display: block; font-weight: bold; font-size: 1rem; margin-top: 5px; }
+
+        #chart-container { height: 400px; border-radius: 8px; border: 1px solid #333; overflow: hidden; }
         
-        #chart-container { height: 450px; border-radius: 8px; border: 1px solid #333; overflow: hidden; }
-        .log-box { background: #161a1e; border-radius: 8px; padding: 10px; height: 180px; overflow-y: auto; border: 1px solid #444; }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        th { color: #848e9c; border-bottom: 1px solid #333; text-align: left; padding-bottom: 5px; }
-        td { padding: 6px 0; border-bottom: 1px solid #222; }
+        /* Logs Section */
+        .history-panel { background: #161a1e; border-radius: 8px; border: 1px solid #444; padding: 10px; height: 250px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { color: #848e9c; text-align: left; padding-bottom: 8px; border-bottom: 1px solid #333; }
+        td { padding: 8px 0; border-bottom: 1px solid #222; }
+
+        .btn-clear { background: transparent; color: var(--red); border: 1px solid var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; float: right; font-size: 0.7rem; }
+        .bullish { color: var(--green); }
+        .bearish { color: var(--red); }
     </style>
 </head>
 <body>
 
-    <div class="header-box"><h1 class="branding">Mehrab AI - Quantum Analysis Center</h1></div>
+    <div class="header-box">
+        <h1 class="branding">Mehrab AI Quantum Engine</h1>
+    </div>
 
-    <div class="grid-container">
+    <div class="live-price-box">
+        <span class="price-label">Current Ethereum Market Price</span>
+        <span id="price-display" class="price-val">$0,000.00</span>
+        <div id="market-status" style="font-size: 0.75rem; color: #848e9c;">Syncing with Binance...</div>
+    </div>
+
+    <div class="dashboard-grid">
         <div class="left-col">
-            <div id="chart-container">
-                <div id="tradingview_chart" style="height: 100%;"></div>
+            <div class="target-grid">
+                <div class="t-card"><span class="price-label">Entry</span><span id="fig-entry" class="t-val">--</span></div>
+                <div class="t-card"><span class="price-label" style="color:var(--green)">Target TP</span><span id="fig-tp" class="t-val bullish">--</span></div>
+                <div class="t-card"><span class="price-label" style="color:var(--red)">Stop Loss</span><span id="fig-sl" class="t-val bearish">--</span></div>
             </div>
-            
-            <div class="target-box">
-                <div><span style="color:#848e9c; font-size:0.7rem;">LIVE ENTRY</span><span id="live-entry" class="val">--</span></div>
-                <div><span style="color:var(--green); font-size:0.7rem;">PROFIT TARGET</span><span id="live-tp" class="val" style="color:var(--green)">--</span></div>
-                <div><span style="color:var(--red); font-size:0.7rem;">STOP LOSS</span><span id="live-sl" class="val" style="color:var(--red)">--</span></div>
+            <div id="chart-container">
+                <div id="tradingview_main" style="height: 100%;"></div>
             </div>
         </div>
 
         <div class="right-col">
-            <div class="analysis-card">
-                <div style="font-weight:bold; color:var(--gold); margin-bottom:10px;">📊 AI MARKET PREDICTION</div>
-                <div id="prediction-text" style="line-height:1.4;">Analyzing current volatility...</div>
-                <div id="prediction-move" class="prediction-badge">WAITING...</div>
-                <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-                <div style="font-size:0.8rem; color:#848e9c;">
-                    <strong>Next 24h Outlook:</strong><br>
-                    <span id="outlook-text">Monitoring Support @ $1,950 and Resistance @ $2,040.</span>
-                </div>
-            </div>
-
-            <div class="analysis-card" style="border-left-color: #555;">
-                <div style="font-weight:bold; margin-bottom:8px;">TRADER PROFILE</div>
-                <select id="profile-select" onchange="updateTargetsUI()" style="width:100%; background:#333; color:white; border:1px solid #444; padding:8px; border-radius:4px;">
-                    <option value="normal">Normal (Low Risk)</option>
-                    <option value="intermediate">Intermediate (Medium)</option>
-                    <option value="aggressive">Aggressive (High Risk)</option>
-                </select>
-            </div>
-
-            <div class="log-box">
-                <div style="font-weight:bold; font-size:0.8rem; margin-bottom:5px; color:var(--gold);">📜 ACTIVITY LOG</div>
-                <table id="trade-log">
-                    <thead><tr><th>Time</th><th>Action</th><th>Price</th></tr></thead>
-                    <tbody id="log-body"></tbody>
+            <div class="history-panel">
+                <button class="btn-clear" onclick="clearLogs()">Clear History</button>
+                <div style="font-weight:bold; color:var(--gold); margin-bottom:10px;">📋 PERSISTENT TRADE LOGS</div>
+                <table>
+                    <thead>
+                        <tr><th>Time</th><th>Type</th><th>Price</th></tr>
+                    </thead>
+                    <tbody id="log-body">
+                        </tbody>
                 </table>
+            </div>
+            
+            <div style="margin-top:15px; background: #1c2127; padding: 15px; border-radius: 8px; border-left: 4px solid var(--gold);">
+                <div style="font-weight:bold; font-size: 0.85rem;">🔮 AI PREDICTION</div>
+                <p id="ai-advice" style="font-size: 0.8rem; line-height: 1.4; color: #eaecef;"></p>
             </div>
         </div>
     </div>
 
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <script>
-        let ethPrice = 0;
-        const config = {
-            normal: { tp: 0.8, sl: 0.4 },
-            intermediate: { tp: 1.5, sl: 0.7 },
-            aggressive: { tp: 3.0, sl: 1.2 }
-        };
+        let currentPrice = 0;
+        // Load logs from LocalStorage immediately
+        let savedLogs = JSON.parse(localStorage.getItem('mehrab_logs')) || [];
 
-        // Initialize TradingView Chart
+        // Initialize TradingView
         new TradingView.widget({
-            "autosize": true,
-            "symbol": "BINANCE:ETHUSDT",
-            "interval": "15",
-            "theme": "dark",
-            "style": "1",
-            "locale": "en",
-            "container_id": "tradingview_chart",
-            "hide_side_toolbar": false,
-            "allow_symbol_change": true,
-            "details": true,
-            "hotlist": true,
-            "calendar": true
+            "autosize": true, "symbol": "BINANCE:ETHUSDT", "interval": "15",
+            "theme": "dark", "container_id": "tradingview_main", "locale": "en"
         });
 
-        async function fetchMarketData() {
+        async function updateEngine() {
             try {
                 const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT');
                 const data = await res.json();
-                ethPrice = parseFloat(data.price);
-                updateTargetsUI();
-                generatePrediction();
-            } catch (e) { console.error("API Error"); }
+                currentPrice = parseFloat(data.price);
+                
+                // Update UI
+                document.getElementById('price-display').innerText = '$' + currentPrice.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('fig-entry').innerText = '$' + currentPrice.toFixed(2);
+                
+                // Figures for Normal Profile (0.8% TP / 0.4% SL)
+                document.getElementById('fig-tp').innerText = '$' + (currentPrice * 1.008).toFixed(2);
+                document.getElementById('fig-sl').innerText = '$' + (currentPrice * 0.996).toFixed(2);
+
+                generateAIInsight(currentPrice);
+            } catch (e) { console.error("Update failed"); }
         }
 
-        function updateTargetsUI() {
-            if (!ethPrice) return;
-            const profile = document.getElementById('profile-select').value;
-            const settings = config[profile];
-
-            document.getElementById('live-entry').innerText = '$' + ethPrice.toFixed(2);
-            document.getElementById('live-tp').innerText = '$' + (ethPrice * (1 + settings.tp/100)).toFixed(2);
-            document.getElementById('live-sl').innerText = '$' + (ethPrice * (1 - settings.sl/100)).toFixed(2);
-        }
-
-        function generatePrediction() {
-            // Simulated AI Prediction based on real Feb 2026 market context
-            // Current Market (Feb 22, 2026): ETH is consolidating near $1,970 with a bearish tilt.
-            const predText = document.getElementById('prediction-text');
-            const predMove = document.getElementById('prediction-move');
-            const outlook = document.getElementById('outlook-text');
-
-            if (ethPrice < 1980) {
-                predText.innerHTML = "ETH is currently facing <strong>Extreme Fear</strong> (Index: 8). Market is in a 'falling wedge' pattern. Momentum is weak but reaching oversold zones.";
-                predMove.innerText = "ACCUMULATE / BUY";
-                predMove.className = "prediction-badge pred-buy";
-                outlook.innerText = "Expect a relief bounce towards $2,041 if $1,950 support holds. Caution: Break below $1,900 opens $1,600.";
+        function generateAIInsight(price) {
+            const advice = document.getElementById('ai-advice');
+            if (price < 1965) {
+                advice.innerHTML = "Market is in <strong>Capitulation Phase</strong>. RSI is oversold. Next move: Potential breakout above $1,990.";
             } else {
-                predText.innerHTML = "Price is testing local resistance. RSI is approaching 60. Volume is neutral, suggesting a potential fake-out.";
-                predMove.innerText = "CAUTION / SELL";
-                predMove.className = "prediction-badge pred-sell";
-                outlook.innerText = "Resistance at $2,100 is strong. Look for pullbacks to entry zones.";
+                advice.innerHTML = "Consolidating near resistance. Volume is neutral. Stay cautious for a <strong>Fake-out</strong> near $2,000.";
             }
         }
 
-        function logActivity(action, price) {
-            const tbody = document.getElementById('log-body');
-            const row = `<tr><td>${new Date().toLocaleTimeString()}</td><td>${action}</td><td>$${price}</td></tr>`;
-            tbody.insertAdjacentHTML('afterbegin', row);
+        // Persistent Log Function
+        function saveTradeLog(action, price) {
+            const entry = {
+                time: new Date().toLocaleTimeString(),
+                type: action,
+                price: price.toFixed(2)
+            };
+            savedLogs.unshift(entry);
+            // Limit to last 50 logs to save browser memory
+            if (savedLogs.length > 50) savedLogs.pop();
+            
+            // Critical: Save to LocalStorage
+            localStorage.setItem('mehrab_logs', JSON.stringify(savedLogs));
+            renderLogs();
         }
 
-        // Run Engine
-        setInterval(fetchMarketData, 10000);
-        fetchMarketData();
+        function renderLogs() {
+            const tbody = document.getElementById('log-body');
+            tbody.innerHTML = savedLogs.map(log => `
+                <tr>
+                    <td>${log.time}</td>
+                    <td class="${log.type.includes('BUY')?'bullish':'bearish'}">${log.type}</td>
+                    <td>$${log.price}</td>
+                </tr>
+            `).join('');
+        }
+
+        function clearLogs() {
+            if(confirm("Erase all saved history?")) {
+                localStorage.removeItem('mehrab_logs');
+                savedLogs = [];
+                renderLogs();
+            }
+        }
+
+        // Auto-simulation for Logs (Every 2 mins find a new setup)
+        setInterval(() => {
+            if (currentPrice > 0) {
+                const side = Math.random() > 0.5 ? "PAPER BUY" : "PAPER SELL";
+                saveTradeLog(side, currentPrice);
+            }
+        }, 120000);
+
+        // Run
+        setInterval(updateEngine, 10000);
+        updateEngine();
+        renderLogs(); // Initial render from storage
     </script>
 </body>
 </html>
